@@ -1,0 +1,14 @@
+Package: dyebias
+Title: Methods to correct for gene-specific dye bias
+Version: 1.0.6
+Date: 17 Feb 2009
+Author: Philip Lijnzaad <p.lijnzaad@umcutrecht.nl> and Thanasis Margaritis <a.margaritis@umcutrecht.nl>
+Description: Gene-specific dye-bias correction of two-color microarray data using the GASSCO
+  method described in Margaritis et al. 2009. 
+Maintainer: Philip Lijnzaad <p.lijnzaad@umcutrecht.nl>
+License: GPL v3
+Depends: R (>= 1.4.1), marray, Biobase
+Suggests: limma, convert, GEOquery, dyebiasexamples, methods
+URL: http://www.holstegelab.nl/publications/margaritis_lijnzaad
+biocViews: Microarray, TwoChannel, QualityControl, Preprocessing
+

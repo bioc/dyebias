@@ -1,0 +1,48 @@
+2009-04-01  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
+
+	* all example()s now non-verbose; adjustments to vignette
+	* release 1.0.6
+
+2009-03-19  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
+
+	* various little fixes
+	* release 1.0.5
+
+2009-03-12  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
+
+	* default is.balanced argument in dyebias.estimate.iGSDBs is now
+	consistently TRUE in both docs and code
+	* version 1.04
+
+2009-03-04  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
+
+	* half of the vignetta is now eval=FALSE, since it takes too
+	long to create the PDF file
+	* version 1.0.3
+
+2009-02-27  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
+
+	* version 1.0.2
+	
+	* misc. changes/clarifications to documentation
+
+	* dyebias.monotonicityplot now also in vignette
+	
+	* put under GPL v3
+
+2009-02-25  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
+
+	* added dyebias.monotonicity and dyebias.monotonicityplot
+
+2009-02-17  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
+
+	* version 1.0.1
+
+2009-02-12  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
+
+	* plotfunctions.R: added type argument to dyebias.trendplot
+
+2009-02-10  Philip Lijnzaad  <p.lijnzaad@med.uu.nl>
+
+	* dyebias.Rnw: misc. editorial changes
+	

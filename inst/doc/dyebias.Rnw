@@ -1,0 +1,1019 @@
+% NOTE -- ONLY EDIT THE .Rnw FILE!!!  The .tex file is
+% likely to be overwritten.
+%
+% \VignetteIndexEntry{dye bias correction}
+% \VignetteDepends{marray, limma, convert, GEOquery, methods}
+% \VignetteSuggests{dyebiasexamples}
+% \VignetteKeywords{Expression Analysis, Preprocessing, dye bias, normalization}
+% \VignettePackage{dyebias}
+
+%%% NOTE: the <<fig>> chunks in this file are not optimized for layout,
+%%% because the default Sweave does not really work if you have MA and RG
+%%% plots containing tens of thousands of genes. The resulting PDF is then
+%%% nearly unreadable; a bitmap rather than a postscript file is called for
+%%% in these cases. Thibaut Jombart's Sweave replacement can produce .png
+%%% files (see http://biomserv.univ-lyon1.fr/~jombart/rstuff.html). The
+%%% alternative <<fig>> chunks are in comments, and work much
+%%% better. However, the standard R utilities (INSTALL, check, build) choke
+%%% on them. The file dyebiasVignette-png.pdf in the distribution has been
+%%% produced with the Jombart driver.
+
+\documentclass[11pt]{article}
+
+\usepackage{amsmath,epsfig,fullpage,hyperref}%psfig,pstricks,
+
+
+%% \parindent 0in
+
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rcode}[1]{{\texttt{#1}}}
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\texttt{#1}}}
+\newcommand{\email}[1]{{\texttt{<#1>}}}
+\newcommand{\URL}[1]{{\texttt{#1}}}
+
+%% \parindent 0in
+
+\usepackage[round]{natbib}
+
+\begin{document}
+
+\title{\bf Correcting dye bias with the GASSCO method  using the \Rcode{dyebias} package}
+
+
+%%% local shorthands:
+\newcommand{\iGSDB}[0]{\textit{iGSDB}}
+\newcommand{\slidebias}[0]{\textit{slide bias}}
+\newcommand{\etal}[0]{\textit{et~al.}}
+
+
+\author{Philip Lijnzaad$^1$ and Thanasis Margaritis$^2$}
+\maketitle
+\begin{center}
+1. \email{p.lijnzaad@umcutrecht.nl}\\
+2. \email{a.margaritis@umcutrecht.nl}\\
+Holstege Genomics Laboratory\\
+Dept. of Biomedical Genetics \\
+University Medical Center (UMC) \\
+Universiteitsweg 100 \\
+3584 CG Utrecht \\
+The Netherlands
+\end{center}
+
+
+\tableofcontents
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Overview}
+
+This document gives a brief tutorial on how to use the \Rpackage{dyebias}
+package to correct for gene-specific dye bias of two-colour microarray data
+using the GASSCO method by \citet{lijnzaad09}.  The gene-specific dye bias
+artefact appears to be an underestimated problem, which is not fully
+corrected by using dye swaps.  The principle behind the GASSCO method --
+which can equally well be called a normalization method -- is very simple. We
+observed that the total dye bias varies not only with each gene (or, more
+precisely, each probe or reporter), but also with each hybridization, in an
+apparently linear fashion. The formula is simply
+
+$\beta_{ij} = F_j * \gamma_i $
+
+\noindent where $\beta_{ij}$ is the total dye bias of reporter $i$ in hybridization
+$j$; $F_j$ is the estimated \slidebias{} (more precisely: the hybridization
+bias), and $\gamma_i$ is the so-called \textit{intrinsic gene specific dye
+bias}, or briefly \iGSDB{} (again: \textit{gene} is a
+misnomer; \textit{probe} or \textit{reporter} is more precise). 
+
+It turns out that the \iGSDB{} depends on the protocols and somewhat on the
+average expression levels, but the largest factor is the reporter
+sequence. The slide bias depends largely on the labeling percentage \citep{lijnzaad09}.
+Although the \iGSDB{}s can be predicted from the reporter sequence (see
+\citet{lijnzaad09}, Supplemental Discussion), it is easier and more precise
+to estimate it from the data. All that is needed is either a number of
+self-self hybridizations, or a number of experiments that have been done in
+dye-swap (also known as dye-flip or fluor-flip). If needed, estimated
+\iGSDB{}s can be reused, provided the protocols have not changed.
+The genes having the strongest \iGSDB{}s are used to estimate the slide bias.
+
+The steps to perform dye bias correction are, then, 
+
+\begin{enumerate}
+  \item{estimate the intrinsinc gene specific dye bias using a number of
+      self-self or dye-swapped slides }
+  \item{for each slide, estimate the slide bias, and apply the correction}
+\end{enumerate}
+
+
+\noindent The \Rpackage{dyebias} package provides functions to do both, and
+also has some plotting routines to judge the correction. The package has been
+tested on a wide variety of public data (see \citet{lijnzaad09}), and has
+been in active production in our own lab since over a year. We appreciate all
+feedback.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Installing}
+
+If you are reading this document and have not yet installed any
+software on your computer, visit \url{http://biocondcutor.org} and
+follow the instructions for installing \Rcode{R} and Bioconductor.  Once
+you have installed both \Rcode{R} and Bioconductor, install the
+\Rpackage{dyebias} package with
+
+%% dont use a chunk here, easier to postprocess:
+\Rcode{                                 
+source("http://bioconductor.org/biocLite.R") \\
+biocLite("dyebias")
+}
+
+\noindent Alternatively, under Windows, select \Rcode{Packages} from the menu
+and click on \Rcode{Install package(s) from Bioconductor...}, and select
+\Rpackage{dyebias} from the pop--up. Under Linux/Unix you can use the usual
+command \texttt{R CMD INSTALL} or set the option \texttt{CRAN} to your
+nearest mirror site and use the command \texttt{install.packages} from within
+an R session. The latest version of the \Rpackage{dyebias} package can always
+be found at \url{http://www.holstegelab.nl/publications/margaritis_lijnzaad}.
+
+Note: if you run \Rcode{R CMD check} on this package, it will complain with
+\Rcode{dyebias.apply.correction: no visible global function definition for
+  'maR<-'} (nor for \Rcode{'maG<-'}). You can safely ignore this message.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Introduction}
+
+For simple examples of how the \Rpackage{dyebias} package can be used to
+correct dyebias, just run the \Rcode{example()}s for any of the functions in
+the package. In particular, try \Rcode{example(dyebias.rgplot)},
+\Rcode{example(dyebias.boxplot)} and \Rcode{example(dyebias.trendplot)}.
+They make use of our own validation data, which is provided by the
+\Rpackage{dyebiasexamples} package. The current document presents two more
+case studies.
+
+\section{Tuteja et al. (2008)}
+
+The first example uses data from \citet{tuteja08}.  It concerns ChIP on chip
+data from five self-spotted mouse cDNA slides.
+
+\subsection{Reading the data}
+
+The data is deposited in Array Express \citep{arrayexpress07} under accession
+\texttt{M-TAB-32}, but for convenience, the data is provided through the
+\Rpackage{dyebiasexamples} package. We need the \Rpackage{marray} package
+\citep{marray} for the data model, \Rpackage{convert} for converting, and of
+course \Rpackage{dyebias} and \Rpackage{dyebiasexamples}:
+
+<<>>=
+  library(marray)
+  library(dyebias)
+  library(dyebiasexamples)
+  library(convert)
+
+  options(stringsAsFactors = FALSE)
+@ 
+
+\noindent The Tuteja data itself is not in the \Rcode{data} directory, since it doesn't
+adhere to the \Rcode{R} standards. Instead, it was put in the \Rcode{extradata}
+directory. Find it:
+
+<<>>=
+  datadir <- system.file("extradata", package="dyebiasexamples")
+  datadir
+@ 
+
+\noindent The sample file contains descriptions of the hybridizations; read it and 
+convert to a proper \Rcode{marrayInfo} object:
+
+<<>>=
+
+  sample.file <-  file.path(datadir, "Tuteja-samples.txt")
+
+  targets <- read.marrayInfo(sample.file)
+
+  summary(targets)
+
+@ 
+
+\noindent It shows that we have five hybridizations, all of them FoxA2-enriched versus
+input material. Three of them have the dyes in the ``forward'' direction, two
+in the ``reverse'' direction. In other words, the design is not balanced;
+more on this below. First prepare the layout information (this was gleaned
+from the original submission):
+
+<<>>=
+
+  layout <- read.marrayLayout(fname=NULL, ngr=12, ngc=4, nsr=22, nsc=19)
+
+  n.spots <- maNspots(layout)
+
+  summary(layout)
+
+@ 
+
+\noindent Read the gene information from the first of the data files. The
+only thing really needed by the \Rpackage{dyebias} package is the
+\Rcode{reporterId} column for the \Rcode{maInfo(maGnames(data))}, but it
+doesn't hurt to include \Rcode{control.type} and \Rcode{reporter.group}.
+The latter is used to set the \Rcode{maControls}. These are not needed, but
+\Rcode{marray} complains otherwise, so we might as well supply the information.
+
+<<>>=
+
+  first.file <- file.path(datadir, maInfo(targets)$filename[1])
+  first.file
+  gnames <- read.marrayInfo(first.file, info.id=c(7,8,10), labels=10, skip=0)
+  names(maInfo(gnames)) <- c("control.type", "reporter.group", "reporterId")
+
+  maInfo(gnames)$reporterId <- as.character(maInfo(gnames)$reporterId)
+
+  #### Following is not really needed (it makes  the 
+  ### ``"Controls are generated from an arbitaray columns\n"'' message go way
+
+  controls <- maInfo(gnames)$reporter.group
+  controls [ controls == "Experimental"] <-  "gene"
+  maControls(layout) <- as.factor(controls)
+
+  summary(gnames)
+
+@ 
+
+\noindent Now read the data. In this data set both 'raw' and normalized
+are available.  This is good, because the raw data has foreground as well as
+background intensities, which allows us to better judge the quality
+of the spots.  We therefore read both, starting with the raw data:
+
+<<>>=
+
+  data.raw <- read.GenePix(fnames = maInfo(targets)$filename,
+                           path = datadir,
+                           name.Gf = "GenePix:F532 Median",
+                           name.Gb ="GenePix:B532 Median",
+                           name.Rf = "GenePix:F635 Median",
+                           name.Rb = "GenePix:B635 Median",
+                           name.W = "GenePix:Flags",
+                           layout = layout,
+                           gnames = gnames,
+                           targets = targets,
+                           skip=0, sep = "\t", quote = '"', DEBUG=TRUE)
+
+@ 
+
+\noindent The weights in the file use a different convention, so cast them
+back to ours, which is \Rcode{weight == 0} for bad spots, \Rcode{weight == 1}
+for good spots. (Bad spots are never used as estimator genes, and you could
+for instance decide not to dye bias-corrected them). Also attach the layout
+the \Rcode{data.raw} object, and show what we have:
+
+<<>>=
+
+  maW(data.raw)[ maW(data.raw) == 0] <- 1
+  maW(data.raw)[ maW(data.raw) < 0] <- 0
+
+  maLayout(data.raw) <- layout
+
+  summary(data.raw)
+
+@ 
+
+\noindent Let's now read the normalized data. As a short-cut, we will use
+\Rcode{data.raw} as a template (using \Rcode{as()} from the
+\Rpackage{convert} package), and then only replace the actual values. 
+
+<<>>=
+
+  normalized.data.file <-  file.path(datadir, "E-MTAB-32-processed-data-1641029599.txt")
+  data <- read.table(normalized.data.file, sep="\t", as.is=T, header=T, skip=1)
+  names(data) <- c("reporterId", "X13685041", "X13685040" , "X13685153" ,"X13685151" ,"X13685042")
+  ## get rid of overly long gene names:
+  data$reporterId <- sub(pattern="ebi.ac.uk:MIAMExpress:Reporter:A-MEXP-1165\\.(P[0-9]+) .*",
+     replacement="\\1", x=data$reporterId, perl=T, fixed=F)
+  data$reporterId <- sub(pattern="ebi.ac.uk:MIAMExpress:Reporter:A-MEXP-1165\\.Blank.*",
+     replacement="Blank", x=data$reporterId, perl=T, fixed=F)
+
+  data.norm <- as(data.raw,"marrayNorm")
+
+  ## now replace the actual data:
+  m <- as.matrix(data[,c(2:6)])
+  n <- as.numeric(m)
+  dim(n) <- dim(m)
+
+  maM(data.norm) <- n
+
+@ 
+
+\noindent In most cases, authors have deposited their data such that the dye swaps have
+been swapped back so the values seem not to have been dye swapped. However,
+we are interested in the dye effect, \emph{not} in the difference of
+FoxA2-enriched over input material. We therefore have to unswap the swapped-back
+dye swaps. 
+
+<<>>=
+
+  maM(data.norm)[,c(3,4)] <- -1 *maM(data.norm)[,c(3,4)]
+
+@ 
+
+\noindent $A$, the average intensity of both channels, is not yet set, so
+compute it here:
+
+<<>>=
+
+  maA(data.norm) <- log2(  maRf(data.raw) * maGf(data.raw) ) / 2
+
+@ 
+
+\noindent Note that the code does not really need \Rcode{A}; the correction
+is based solely on \Rcode{M}. The \Rcode{A} is not always available; some
+labs publish only the \Rcode{M}-values. In such cases, it is fine to
+``invent'' an \Rcode{A}, e.g. by sampling from a uniform distribution between
+2 and 15 (which is the typical domain of \Rcode{A}). The advantage of such
+fake data is that the plotting routines in the \Rpackage{dyebias} package
+continue to work.
+
+
+\subsection{Estimating the \iGSDB{}}
+
+We now have a full-fledged \Rcode{marrayNorm} object that we can use to
+estimate the iGSDBs from. 
+
+The design is unbalanced, which is actually uncommon; most designs are (or
+should be) balanced. If the design is unbalanced, the
+\Rcode{dyebias.estimate.iGSDBs} function uses \Rpackage{limma} \citep{limma}
+to obtain estimates for the intrinsic gene specific dye biases. In the
+current data set, the \Rcode{reference} is the sample called \Rcode{input}
+(see \Rcode{maInfo(maTargets(data.norm))}). The call is therefore:
+
+<<>>=
+
+  iGSDBs.estimated <- dyebias.estimate.iGSDBs(data.norm,
+                                              is.balanced=FALSE,
+                                              reference="input",
+                                              verbose=TRUE) 
+   
+  summary(iGSDBs.estimated)
+
+@
+
+\noindent This took a little while, mostly be because a full Limma model has to be run
+for this unbalanced design. (We ignore its $p$-values, since we have no
+use for them). If the design is balanced, the estimate is done by simply
+averaging. This gives identical results (and no $p$-values), but is much
+faster.
+
+Let's have a quick look at the distribution of the iGSDBs:
+
+%% <<fig=TRUE, png=FALSE>>=
+<<fig=TRUE>>=
+
+  hist(iGSDBs.estimated$dyebias, breaks=50)
+
+@ 
+
+\noindent In our own lab, the iGSDBs generally have a distribution that is roughly
+symmetrical, with a mean slightly below zero, and a standard deviation of
+around 0.2.  The data shown here shows is fairly similar.
+
+\subsection{Applying the dye bias correction}
+
+Before applying the correction, we need to determine which genes
+(probes/reporters!) are good enough to base the the slide bias estimate on.
+We call them the estimator genes. In our lab, we discard reporters not
+representing genes, and those corresponding to mitochondrial genes,
+transposons, cross-hybridizing and non-unique oligo sequences. In the current
+case, we know nothing about the reporters, so we only insist that they
+correspond to genes; that group is called \Rcode{Experimental}:
+
+<<>>=
+
+  estimator.subset <- (maInfo(maGnames(data.norm))$reporter.group=="Experimental")
+
+  summary(estimator.subset)
+
+@ 
+
+\noindent We now specify which spots we would like to dye bias-correct. The
+easiest is to correct all spots. However, we have noticed that for signals
+that are too high or too low, over-correction can occur. Signals that are too
+high are due to saturation of the scanner, whereas those that are too low may
+be too noisy due to differences in background signal. We want to be a bit
+more selective, only correcting genes where we are certain that we have a
+trustworthy signal. We therefore insist that the weight of the spot is 1, and
+that they lie in the right range. Here, we choose a 
+signal-to-noise ratio (here defined as foreground over background signal)
+$ge$ 1.5 and an average expression \Rcode{A}  $le$ 15.
+
+A convenience function is provided to get an index for the spots that are
+trustworthy estimator genes. The current data set does have background
+signals, so we specify \Rcode{use.background=TRUE}.  (If background signals would
+not have been available, we should have specified \Rcode{use.background=FALSE},
+which causes the minimum foreground signal to be used as a proxy for the
+background signal).
+
+
+<<>>=
+
+  application.subset <- ((maW(data.norm)==1)
+                         & dyebias.application.subset(data.raw=data.raw,
+                                min.SNR=1.5,
+                                maxA=15,
+                                use.background=TRUE)
+                         )
+
+  summary(as.vector(application.subset))
+
+@ 
+
+\noindent We're now set to apply the correction, simply as:
+
+<<>>=
+
+  correction <- dyebias.apply.correction(data.norm=data.norm,
+                                         iGSDBs=iGSDBs.estimated,
+                                         estimator.subset=estimator.subset,
+                                         application.subset=application.subset,
+                                         verbose=TRUE)
+@ 
+
+The \Rcode{correction} object contains the complete results. It is a \Rcode{list}
+with 3 members: \Rcode{data.corrected}, the corrected data in
+\Rcode{marrayNorm} format; \Rcode{estimators}, which contains the estimators
+and is used by the plotting routines; and lastly  \Rcode{summary}, a
+\Rcode{data.frame} with various statistics. The most useful ones are
+probably \Rcode{avg.correction, var.ratio, reduction.perc} and \Rcode{p.value}:
+
+<<>>=
+  correction$summary[,c("slide", "avg.correction", "var.ratio", "reduction.perc", "p.value")]
+
+@ 
+
+\noindent \Rcode{slide} (or alternatively \Rcode{file}) identifies the slide;
+\Rcode{avg.correction} is the slide bias; \Rcode{var.ratio} shows the
+reduction in the variance of \Rcode{M}) that was achieved by the correction;
+\Rcode{reduction.perc} showing the same, but as a percentage. Lastly,
+\Rcode{p.value} indicates the significance of the reduction in variance
+($H_0$: variances before and after correction are equal).
+
+It can be seen that slide 3 had the strongest dye bias. The variance of $M$
+is halved by the method. 
+
+
+\subsection{Plotting the data}
+
+Let us look at how the correction worked out for one particular slide of this
+set, say number 3, the one with the strongest slide bias. We first plot the
+uncorrected data, then the corrected data. In both cases, we colour the
+strongest 5\% green-biased and red-biased spots accordingly (that is why the
+\Rcode{iGSDBs}-argument is required).
+
+There will be an overlap between the estimator genes and those now coloured
+red and green. However, the estimator genes only come from the ``middle'' of
+the data set (as specified by the default value of the
+\Rcode{minmaxA.perc}-argument; see the documentation).
+
+
+%%% The following code uses Thibaut Jombart's Sweave replacement, which can
+%%% produce .png files (see
+%%% http://biomserv.univ-lyon1.fr/~jombart/rstuff.html).  This is needed
+%%% because the embedded postscript files for scatterplots of 10,000's of
+%%% genes are simply too big for acrobat reader.  
+
+%% <<fig=TRUE, png=TRUE, eps=FALSE, pdf=FALSE, width=7, height=4, size=1>>=
+<<fig=TRUE>>=
+
+  layout(matrix(1:2, nrow=1,ncol=2))
+
+  dyebias.rgplot(data=data.norm,
+                 slide=3,
+                 iGSDBs=iGSDBs.estimated,
+                 application.subset=application.subset, 
+                 main="uncorrected",
+                 cex=0.2,
+                 cex.lab=0.8,
+                 cex.main=0.8,
+                 output=NULL)
+
+  dyebias.rgplot(data=correction$data.corrected,
+                 slide=3,
+                 iGSDBs=iGSDBs.estimated,
+                 application.subset=application.subset,
+                 main="corrected",
+                 cex=0.2,
+                 cex.lab=0.8,
+                 cex.main=0.8,
+                 output=NULL)
+
+@ 
+
+
+
+\noindent In the uncorrected slide, there is a clear separation between the genes with
+a strong red bias, and those with a strong green bias. After correction, this
+separation has disappeared, and the overal spread around the diagonal is much
+reduced. The two off-diagonal lines represent a two-fold change, and around
+20 spots appear to be more than two-fold down just as a result of dye bias.
+
+
+How did the procedure perform for all slides? This is best seen using the
+\Rcode{dyebias.boxplot} function. It is called twice, once with the
+uncorrected, once with the corrected data. For clarity, we prefer to order
+the slides by increasing slide bias (of the uncorrected data), hence the
+\Rcode{order} argument:
+
+%% <<fig=TRUE, png=FALSE, height=3, width=6,size=1>>=
+<<fig=TRUE>>=
+
+  layout(matrix(1:2, nrow=1,ncol=2))
+
+  order=dyebias.boxplot(data=data.norm, 
+    iGSDBs=iGSDBs.estimated,
+    order=NULL,
+    ylim=c(-1,1),
+    application.subset=application.subset,
+    main="uncorrected",
+    cex=0.2,
+    cex.lab=0.8,
+    cex.main=0.8,
+    output=NULL
+    )
+
+  order=dyebias.boxplot(data=correction$data.corrected, 
+    iGSDBs=iGSDBs.estimated,
+    order=order,
+    ylim=c(-1,1),
+    application.subset=application.subset, 
+    main="corrected",
+    cex=0.2,
+    cex.lab=0.8,
+    cex.main=0.8,
+    output=NULL
+    )
+
+@ 
+
+
+\noindent If the red and green boxes coincide, this is a sign that the  bias was
+removed successfully, and without introducing other biases. This is clearly
+the case here. Although in general there is no
+correlation between slide bias and residual bias after correction, 
+slide number 3 has both the largests slide bias and the largest residual
+bias. One could consider throwing this hybridization out. 
+
+In the above, we have restricted the dyebias correction and the plots to
+spots that had good quality, by insisting on a weight of 1, good
+signal-to-noise and no saturation. If you would plot all spots (by leaving
+out the \Rcode{application.subset} argument), you would get a fairly large
+residual dye bias.  The reason is that this data set has a high proportion of
+spots that we chose not to correct: around 15\% is due to low quality spots,
+and around 25\% due to too low or too high intensity.  The solution is to
+play with the \Rcode{application.subset} to get more spots corrected; this is
+left as an exercise to the reader.
+
+
+%% ========================================================================
+
+\section{Chen et al. (2007)}
+
+%%% NOTE: this section has been commented out, as it takes too long to build
+%%% for Bioconductor. If you're interested, simply get rid of all the 'eval=FALSE'
+%%% below. 
+
+The next example is based on data from \citet{chen07}, which is available
+from NCBI's Gene Expression Omnibus \citep{geo07} under accession
+\texttt{GSE9318}.  It consists of two sets of Agilent slides: 4 done on
+platform \Rcode{GPL3499}, and 9 slides done on platform \Rcode{GPL5991}. Only
+the latter set has proper dye swaps, and these will be used to estimate the
+intrinsic gene-specific dye bias (iGSDB). These estimates are subsequently
+used to correct all 9 \Rcode{GPL5991} slides.
+
+\subsection{Reading the data}
+
+We will try and download the data directly from GEO using the
+\Rpackage{GEOquery} \citep{davis07}). The downloading and the subsequent
+parsing takes a long while, so we'll first see if we already have the
+\Rcode{.RData} file (derived from the \Rcode{.soft} file), if not, prompt for
+downloading it to the current directory, and then parse the file and save it
+as an \Rcode{R} data dump.  We need the full \Rpackage{.soft}-file, since we
+want to have all the data, not just the \Rcode{M}-values.
+
+<<eval=FALSE>>=
+
+  library(GEOquery)
+  library(marray)
+  library(limma)
+  library(dyebias)
+  library(dyebiasexamples)
+
+  options(stringsAsFactors = FALSE)
+
+
+  gse.id <- "GSE9318"
+  ## dir <- system.file("data", package = "dyebias")
+  dir <- getwd()
+
+  if (! file.exists(dir)) {
+    stop(sprintf("could not find directory '%s' (to write GSE9318 data to/from)", dir))
+  }
+
+  file.RData <- sprintf("%s/%s.RData", dir,gse.id) 
+
+  if( file.exists(file.RData) ) {
+    cat(sprintf("Loading existing data from %s\n", file.RData))
+    load(file.RData)
+  } else {
+    if ( interactive()) { 
+      if (readline(prompt=sprintf("Could not find file %s.\nDo you want me to download the data from GEO?\nThis will take a while [y/N]: ", file.RData)) != "y"  ) {
+        stop("Exiting")
+      }
+    }
+    cat("Downloading .soft file from GEO ...\n")
+    file.soft <- getGEOfile(gse.id, destdir=dir, amount="full")
+    cat("done\nParsing .soft file ...\n")
+    gse <- getGEO(filename=file.soft)
+    cat(sprintf("done\nSaving to %s ... ", file.RData))
+    save.image(file.RData)
+    cat("done\n")
+  } 
+
+@ 
+
+\noindent This data uses the GEOquery classes, and this has to be converted
+to \Rcode{marrayNorm} and \Rcode{marrayRaw} objects, since that is what the
+\Rpackage{dyebias} package uses. The \Rcode{dyebias.geo2marray}-function in
+the \Rpackage{dyebiasexamples} package is provided for that.
+
+The data set consists of slides done on two platforms. The only
+hybridizations that were done in dye-swap on the same platform are on
+platform \Rcode{GPL5991}. These slides are \Rcode{GSM237352, GSM237353,
+  GSM237354} and \Rcode{GSM237355}, and we will use them to estimate the
+iGSDBs. We subsequently use this estimate to correct all the slides done the
+\Rcode{GPL5991} platform\footnote{The slides done on the other platform
+  (\Rcode{GPL3499}) in this data set may or may not benefit from dye bias
+  correction using iGSDB estimates from the \Rcode{GPL5991} slides; this is
+  left as an exercise to the reader.}.
+
+The reporter label is found under the \Rcode{ProbeName}-column, and probes
+(reporters) corresponding to genes look like \Rcode{A\_75\_P01000003}; this is
+used for the \Rcode{gene.selector}-function.
+
+Since the normalized data does not contain \Rcode{A}-values, we calculate
+(approximate) them from the raw data. The columns etc. are as indicated. You
+generally have to be careful with this; use
+e.g. \Rcode{Columns((GSMList(gse))[[1]])} to see what they are, and also plot
+them to be sure about the dye orientation.
+
+<<eval=FALSE>>=
+
+  ## following slides are used to obtain iGSDB estimates:
+  slide.ids.est <- c( "GSM237352", "GSM237353", "GSM237354", "GSM237355" )
+
+  ## column names:
+  cy3.name <- "label_ch1"
+  cy5.name <- "label_ch2" 
+
+  ## function to recognize 'genes':
+  gene.selector <- function(table){grep("^A_75_", as.character(table[["ProbeName"]]))}
+
+  reporterid.name <- "ProbeName"
+  M.name <- "VALUE"              #normalized
+  Gf.name <- "Cy3"               #raw
+  Gb.name <- "Cy3_Background"
+  Rf.name <- "Cy5"               #raw
+  Rb.name <- "Cy3_Background"    # yes! (error in the data: Cy5_Background == Cy5 ...)
+
+  ## convert the raw data ...
+  data.raw.est <-
+    dyebias.geo2marray(gse=gse,
+                       slide.ids=slide.ids.est,
+                       type="raw",
+                       gene.selector=gene.selector,
+                       reporterid.name=reporterid.name,
+                       cy3.name=cy3.name,
+                       cy5.name=cy5.name,
+                       Rf.name=Rf.name,
+                       Gf.name=Gf.name,
+                       Rb.name=Rb.name,
+                       Gb.name=Gb.name,
+                       )
+
+  ## ... and the normalized data:
+  data.norm.est <-
+    dyebias.geo2marray(gse=gse,
+                       slide.ids=slide.ids.est,
+                       type="norm",
+                       gene.selector=gene.selector,
+                       reporterid.name=reporterid.name,
+                       cy3.name=cy3.name,
+                       cy5.name=cy5.name,
+                       M.name=M.name
+                       )
+
+  ## maA was not set; do that here:
+  maA(data.norm.est) <- log2(  maRf(data.raw.est) * maGf(data.raw.est) ) / 2
+
+  ## unswap the swapped dye-swaps:
+  maM(data.norm.est)[, c(2,4)] <-  - maM(data.norm.est)[, c(2,4)]
+
+@ 
+
+\noindent There is one thing that is not quite right with the current data:
+the contents of the \Rcode{Cy3}- and \Rcode{Cy5}-columns are wrong:
+
+<<eval=FALSE>>=
+
+  maInfo(maTargets(data.norm.est))
+
+@ 
+
+\subsection{Estimating the \iGSDB{} }
+
+It happens not to matter in the current case, because the design is balanced,
+and therefore, the dyebias is simply the average.  However, we'll correct it
+nonetheless as it is instructive. A bit of sleuthing shows that what is
+actually needed is the following:
+
+<<eval=FALSE>>=
+
+  info <- maInfo(maTargets(data.norm.est)) 
+
+  info$Cy3 <- c("wt",    "wt IP",  "td",    "td IP" )
+  info$Cy5 <- c("wt IP", "wt",     "td IP", "td")
+
+  references <- c("wt", "td")
+
+  maInfo(maTargets(data.norm.est)) <- info
+
+  maInfo(maTargets(data.norm.est))
+@ 
+
+\noindent That is, we have one dye-swapped pair of IP vs. input material for
+the wild type, and a similar pair for the temperature-sensitive degron
+mutant.  In other words, we have a set of pairwise designs. If
+\Rcode{dyebias.estimate.iGSDBs} were to use LIMMA (which is necessary for
+unbalanced designs, but not necessary and not used in the current case), then
+it has to know what the references are in each case; hence the
+\Rcode{references <- c("wt", "td")} assignment. It also has be able to figure
+out which ``experimental'' (i.e., non-reference) sample goes with which
+reference. Therefore, they all have to start with the name of their
+respective reference sample (see the documentation). Having said, we will
+ignore the \Rcode{references} argument for now, andestimate the iGSDBs using
+simple averaging, simply as:
+
+<<eval=FALSE>>=
+
+  iGSDBs.estimated <- dyebias.estimate.iGSDBs(data.norm.est, verbose=TRUE)
+  summary(iGSDBs.estimated)
+
+@ 
+
+\subsection{Reading the rest of the data}
+
+We now have an estimate of the intrinsic gene specific dye biases, and we can
+use it to correct to all the hybridizations done on platform \Rcode{GPL5991}.
+However, that is not yet converted to \Rcode{marray} objects, so do that
+first, and also make sure \Rcode{A} is set and the dye swaps are swapped back:
+
+<<eval=FALSE>>=
+
+  subset  <- sapply(GSMList(gse), function(x){Meta(x)$platform_id}) == "GPL5991"
+  slide.ids.all <- sapply(GSMList(gse), function(x){Meta(x)$geo_accession})[subset]
+
+  data.raw.all <-
+    dyebias.geo2marray(gse=gse,
+                       slide.ids=slide.ids.all,
+                       type="raw",
+                       gene.selector=gene.selector,
+                       reporterid.name=reporterid.name,
+                       cy3.name=cy3.name,
+                       cy5.name=cy5.name,
+                       Rf.name=Rf.name,
+                       Gf.name=Gf.name,
+                       Rb.name=Rb.name,
+                       Gb.name=Gb.name,
+                     )
+
+  data.norm.all <-
+    dyebias.geo2marray(gse=gse,
+                       slide.ids=slide.ids.all,
+                       type="norm",
+                       gene.selector=gene.selector,
+                       reporterid.name=reporterid.name,
+                       cy3.name=cy3.name,
+                       cy5.name=cy5.name,
+                       M.name=M.name
+                       )      
+
+  maA(data.norm.all) <- log2(  maRf(data.raw.all) * maGf(data.raw.all) ) / 2
+
+  swap=c(1,2,3,5, 7,8,9) 
+  maM(data.norm.all)[, swap] <-  - maM(data.norm.all)[, swap]
+
+@
+
+\subsection{Applying the dye bias correction}
+
+As before, we will exclude some spots, based on their intensity, from dye
+bias correction. The data set does have its own backgrounds, but we know
+little about the suitability of the spots to act as estimators of the slide
+bias, so we\'ll set estimator.subset=T. This means that no spot is excluded
+from being an estimator, apart from the second condition, which is that they
+have an average signal \Rcode{A} falling within the interquartile range (see 
+the documentation of \Rcode{dyebias.apply.correction}).
+
+<<eval=FALSE>>=
+
+  application.subset <- ( (maW(data.norm.all) == 1) &
+                         dyebias.application.subset(data.raw=data.raw.all,
+                                                    min.SNR=1.5,
+                                                    maxA=15,
+                                                    use.background=TRUE)
+                         )
+
+  correction <- dyebias.apply.correction(data.norm=data.norm.all,
+                                             iGSDBs=iGSDBs.estimated,
+                                             estimator.subset=T,
+                                             application.subset=application.subset,
+                                             verbose=FALSE)
+
+  correction$summary[,c("slide", "avg.correction", "var.ratio", "reduction.perc", "p.value")]
+
+@ 
+
+\subsection{Plotting the data}
+
+Some people prefer \Rcode{MA}-plots over \Rcode{RG}-plots, so let's 
+see how the dyebias correction turned out for slide 6, which had the greatest
+bias:
+
+%%% The following code uses Thibaut Jombart's Sweave replacement, which can
+%%% produce .png files (see
+%%% http://biomserv.univ-lyon1.fr/~jombart/rstuff.html).  This is needed
+%%% because the embedded postscript files for scatterplots of 10,000's of
+%%% genes are simply too big for acrobat reader.  
+
+%% <<eval=FALSE, fig=TRUE, png=TRUE, eps=FALSE, pdf=FALSE, height=3, width=6, size=1>>=
+<<eval=FALSE, fig=TRUE>>=
+  layout(matrix(1:2, nrow=1,ncol=2))
+
+  dyebias.maplot(data=data.norm.all,
+                 slide=6,
+                 iGSDBs=iGSDBs.estimated,
+                 application.subset=application.subset,
+                 main="uncorrected",
+                 cex=0.2,
+                 cex.lab=0.8,
+                 cex.main=0.8,
+                 output=NULL)
+
+  dyebias.maplot(data=correction$data.corrected,
+                 slide=6,
+                 iGSDBs=iGSDBs.estimated,
+                 application.subset=application.subset,
+                 main="corrected",
+                 cex=0.2,
+                 cex.lab=0.8,
+                 cex.main=0.8,
+                 output=NULL)
+@ 
+
+
+\noindent The difference between the uncorrected and corrected data is quite
+big. The strongly red-biased spots had an average two-fold change, which,
+after correction, turns out to have been spurious. A number of strongly
+green-biased spots appear depleted before correction, but may actually have
+been enriched in the immunoprecipitated samples after correction.
+
+What is also visible is that the data is not properly normalized. The left
+panel shows a cloud whose bottom has a the downward-sloping trend frequently
+found in ChIP-on-chip data. This should not be present in normalized
+data\footnote{We did not renormalise this data as the point of this document
+  is to demonstrate dye bias correction of existing data.}.  The dye bias
+correction procedure tries to also correct this ChIP-on-chip artifact,
+resulting in suboptimal behaviour (see below).
+
+To get a graphical overview of all corrections, \Rcode{dyebias.boxplot} could
+be used, but another function is provided that can show to what extent the
+data supports our claim that the total dye bias is the product of the slide
+bias and the intrinsic bias. We order all slides by the slide bias, and plot
+each spot. However, the number of spots is too large to judge whether their
+the behaviour is linear. The function \Rcode{dyebias.trendplot} therefore bins
+all probes by their intrinsic bias, and plots the median of each bin for each
+slide:
+
+%% <<eval=FALSE, fig=TRUE, png=FALSE, height=3, width=6, size=1>>=
+<<eval=FALSE, fig=TRUE>>=
+
+  layout(matrix(1:2, nrow=1,ncol=2))
+
+  order=dyebias.trendplot(data=data.norm.all, 
+    iGSDBs=iGSDBs.estimated,
+    application.subset=application.subset,
+    order=NULL,
+    lwd=0.1,
+    ylim=c(-0.5,0.5),
+    output=NULL,
+    main="uncorrected")
+
+  order=dyebias.trendplot(data=correction$data.corrected, 
+    iGSDBs=iGSDBs.estimated,
+    application.subset=application.subset, 
+    order=order,
+    lwd=0.1,
+    ylim=c(-0.5,0.5),
+    output=NULL,
+    main="corrected")
+
+@ 
+
+\noindent The method does a good job, although usually the results are even
+better, with all lines hovering around $M=0$ after the correction.  We
+attribute this behaviour to the fact that the data is poorly normalized, as
+mentioned before. This affects the iGSDB estimates, which in turn impacts the
+correction of the rest of the data. The overall variance, however, is clearly
+reduced.
+
+From the left panel it is also clear that the total dye bias shows a
+consistent trend in each of the bins. This can only happen if the total dye
+bias is a monotonic function of the slide bias and the intrinsic
+gene-specific dye bias. Our proposal to simply use the product of both
+appears to be a good first approximation.
+
+
+This can also be seen using the \Rcode{dyebias.monotonicityplot}. It orders
+all slides by their slide bias, then calculates linear regression lines for
+the apparent $M$ of each gene.  If the monotonicity assumption is warranted,
+the slopes of each of the regression lines should increase with increasing
+iGSDB. This can be tested using the Mann-Kendall test, which is available
+from the \Rcode{dyebias.monotonicity} function. The
+\Rcode{dyebias.monotonicityplot} plots, for each gene, the slope of each
+regression line in the data set.
+
+%%% NOTE: this plot takes very long to calculate!
+
+%% <<eval=FALSE, fig=TRUE, png=TRUE, height=3, width=6, size=1>>=
+<<eval=FALSE, fig=TRUE>>=
+
+  layout(matrix(1:2, nrow=1,ncol=2))
+
+  order=dyebias.monotonicityplot(data=data.norm.all, 
+    iGSDBs=iGSDBs.estimated,
+    order=NULL,
+    ylim=c(-0.5,0.5),
+    output=NULL,
+    main="uncorrected")
+
+  order=dyebias.monotonicityplot(data=correction$data.corrected, 
+    iGSDBs=iGSDBs.estimated,
+    order=order,
+    ylim=c(-0.5,0.5),
+    output=NULL,
+    main="corrected")
+
+@ 
+
+Before dye bias correction with GASSCO, the data shows a clear trend of
+increasing apparent $M$, due to dye bias. After correction, this trend has
+disappeared, supporting our assumption of monotonicity in this case.
+
+%% ========================================================================
+
+
+\section{Closing remarks}
+
+So far, we have not found a data set that does not benefit from GASSCO.  The
+code has been in continuous use in our laboratory since early 2008, totalling
+hundreds of hybrizations. In our experience, the code and the estimates are
+very robust, which we attribute to the use of medians and large samples
+wherever appropriate.
+
+The quality of dye bias correction with GASSCO depends on the accuracy of the iGSDB
+estimate. This, in turn, depends on having a representative data set of
+self-self and/or dye-swapped hybrizations. In our experience, a set of around
+12 hybrizations is optimal. However, even as few as four hybrizations can
+result in good dye bias correction, as witnessed by the examples given here,
+and also by the \Rcode{data.norm} data set used throughout the
+\Rcode{example()} code of the \Rcode{dyebias} package.
+
+Make sure the data is properly normalized, and that the dye orientation is
+the same as in the original hybridizations (that is, do not swap them back). 
+
+Lastly, we appreciate all feedback.
+
+\vspace{1.5ex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{abbrvnat}
+% \bibliographystyle{plainnat}
+
+\bibliography{dyebias}
+
+
+\section{sessionInfo}
+<<results=tex,echo=false>>=
+  toLatex(sessionInfo())
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
+
+
