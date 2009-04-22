@@ -138,10 +138,11 @@
       \item{green.ids}{The IDs of the reporters having the strongest green effect.}
       \item{green.cutoff}{All reporters in green.ids have an iGSDB below this value.}
       \item{green.subset}{An index into the reporters having the strongest green effect.}
+      \item{green.iGSDBs}{The corresponding iGSDBs}
       \item{red.ids}{The IDs of the reporters having the strongest red effect.}
       \item{red.cutoff}{All reporters in green.ids have an iGSDB above this value.}
-      \item{red.subset}{An index into the reporters having the strongest
-        red effect.}
+      \item{red.subset}{An index into the reporters having the strongest red effect.}
+      \item{red.iGSDBs}{The corresponding iGSDBs}
     }
   }
 
@@ -151,11 +152,9 @@
     \itemize{
       \item{slide}{The slide number}
       \item{file}{Which file it came from}
-      \item{green.bias}{The green bias of this slide}
-      \item{red.bias}{The red bias of this slide}
-      \item{green.correction}{The correction based on only the
+      \item{green.correction}{The slide bias based on only the
         green bias of this slide}
-      \item{red.correction}{The correction based on only the
+      \item{red.correction}{The slide bias based on only the
         red bias of this slide}
       \item{avg.correction}{The total correction factor of this slide. This
         is in fact the slide bias}
@@ -260,7 +259,7 @@
   }
 
   ## give overview:
-  correction$summary[,c("slide", "file", "reduction.perc", "p.value")]
+  correction$summary[,c("slide", "file", "avg.correction", "reduction.perc", "p.value")]
 
   ## and summary:
   summary(as.numeric(correction$summary[, "reduction.perc"]))

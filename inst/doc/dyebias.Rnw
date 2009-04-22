@@ -69,9 +69,18 @@ The Netherlands
 
 This document gives a brief tutorial on how to use the \Rpackage{dyebias}
 package to correct for gene-specific dye bias of two-colour microarray data
-using the GASSCO method by \citet{lijnzaad09}.  The gene-specific dye bias
-artefact appears to be an underestimated problem, which is not fully
-corrected by using dye swaps.  The principle behind the GASSCO method --
+using the GASSCO method by \citet{lijnzaad09}. 
+
+A well-known artefact of two-colour microarrays is the intensity-dependent
+dye bias, which is usually adequately addressed by using LOESS normalization. However,
+gene-specific dye bias is different, and persists after LOESS
+normalization. It is also not sufficient to use dye swaps, as this firstly wastes
+statistical power, but more importantly, may leave residual bias since
+dye-swaps need not have the same degree of dye bias. 
+
+Gene-specific dye bias is ubiquitous, and often quite large. The GASSCO
+method implemented in the \Rcode{dyebias} package efficiently solves the
+problem in a general and robust way.  The principle behind the method --
 which can equally well be called a normalization method -- is very simple. We
 observed that the total dye bias varies not only with each gene (or, more
 precisely, each probe or reporter), but also with each hybridization, in an
@@ -237,10 +246,13 @@ The latter is used to set the \Rcode{maControls}. These are not needed, but
 
 @ 
 
-\noindent Now read the data. In this data set both 'raw' and normalized
-are available.  This is good, because the raw data has foreground as well as
-background intensities, which allows us to better judge the quality
-of the spots.  We therefore read both, starting with the raw data:
+\noindent Next, we read the data. In the examples in this document, we assume
+that the public data is properly normalized; that is really the starting
+point for GASSCO. If the data is not (properly) normalized, results will be
+suboptimal (as we will see). In the Tuteja data set both 'raw' and normalized
+data are available.  This is good, because the raw data has foreground as
+well as background intensities; the latter allow us to better judge the quality
+of the spots. We therefore read both, starting with the raw data:
 
 <<>>=
 
@@ -400,7 +412,7 @@ more selective, only correcting genes where we are certain that we have a
 trustworthy signal. We therefore insist that the weight of the spot is 1, and
 that they lie in the right range. Here, we choose a 
 signal-to-noise ratio (here defined as foreground over background signal)
-$ge$ 1.5 and an average expression \Rcode{A}  $le$ 15.
+$\ge$ 1.5 and an average expression \Rcode{A} $\le$ 15.
 
 A convenience function is provided to get an index for the spots that are
 trustworthy estimator genes. The current data set does have background
@@ -453,9 +465,8 @@ reduction in the variance of \Rcode{M}) that was achieved by the correction;
 \Rcode{p.value} indicates the significance of the reduction in variance
 ($H_0$: variances before and after correction are equal).
 
-It can be seen that slide 3 had the strongest dye bias. The variance of $M$
-is halved by the method. 
-
+It can be seen that slide 3 had the strongest dye bias. Its variance of $M$
+is hugely reduced, by 50\%. 
 
 \subsection{Plotting the data}
 
@@ -504,13 +515,12 @@ the data set (as specified by the default value of the
 
 @ 
 
-
-
-\noindent In the uncorrected slide, there is a clear separation between the genes with
-a strong red bias, and those with a strong green bias. After correction, this
-separation has disappeared, and the overal spread around the diagonal is much
-reduced. The two off-diagonal lines represent a two-fold change, and around
-20 spots appear to be more than two-fold down just as a result of dye bias.
+\noindent In the uncorrected slide, there is a clear separation between the
+genes with a strong red bias, and those with a strong green bias. After
+correction, this separation has disappeared, and the overal spread around the
+diagonal is much reduced. As can be seen from from the off-diagonal lines
+(representing a two-fold change), some 20 spots appear to have been down by
+more than two-fold down just as a result of gene-specific dye bias.
 
 
 How did the procedure perform for all slides? This is best seen using the
@@ -944,7 +954,7 @@ the apparent $M$ of each gene.  If the monotonicity assumption is warranted,
 the slopes of each of the regression lines should increase with increasing
 iGSDB. This can be tested using the Mann-Kendall test, which is available
 from the \Rcode{dyebias.monotonicity} function. The
-\Rcode{dyebias.monotonicityplot} plots, for each gene, the slope of each
+\Rcode{dyebias.monotonicityplot} function plots, for each gene, the slope of each
 regression line in the data set.
 
 %%% NOTE: this plot takes very long to calculate!

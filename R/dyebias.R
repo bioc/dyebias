@@ -129,11 +129,6 @@ dyebias.apply.correction <-  function
  ) {  
   here <- ", in dyebias.R:dyebias.apply.correction"
 
-  
-#  if (verbose) {
-#    print("Invoking dye bias correction. Please cite Margaritis et al. 2008 etc.\n")
-#  }
-
   .check.required.columns(frame=iGSDBs,
                           wanted.columns=c("reporterId", "dyebias", "A"),
                           error.suffix=here)
@@ -181,8 +176,8 @@ dyebias.apply.correction <-  function
   Gcor <- matrix(0, n.spots, n.slides)
 
   summary <- data.frame(slide="", file="",
-                        green.bias="", red.bias="",
-                        green.correction="", red.correction="",
+                        green.correction="",
+                        red.correction="",
                         avg.correction="",
                         var.ratio="", reduction.perc="", p.value="")
 
@@ -198,18 +193,17 @@ dyebias.apply.correction <-  function
     }
     
     ## actual dye effects of the bottom/top 5% percentile reporters on this slide:
-    slide.bias.green = median( maM(data.norm)[ estimators$green.subset, i], na.rm=TRUE)
-    slide.bias.red = median( maM(data.norm)[ estimators$red.subset, i], na.rm=TRUE)
-    slide.correction.green = slide.bias.green / estimators$green.effect
-    slide.correction.red = slide.bias.red / estimators$red.effect
 
-    slide.correction.avg <- mean( c(slide.correction.red, slide.correction.green ))
+    slide.corrections.green = maM(data.norm)[ estimators$green.subset, i] / estimators$green.iGSDBs
+    slide.correction.green = median(slide.corrections.green, na.rm=TRUE) # for convience
+    slide.corrections.red =   maM(data.norm)[ estimators$red.subset,   i] / estimators$red.iGSDBs
+    slide.correction.red =   median(slide.corrections.red,na.rm=TRUE)
+    slide.correction.avg <- median( c(slide.corrections.green, slide.corrections.red ), na.rm=TRUE)
+    ## (old code used ratio of medians rather than median of ratios; see code before 22 apr 2009)
 
     if(verbose) { 
-      print(sprintf("Estimated slide bias and correction\n: green bias: %g, red bias: %g, green correction: %g, red correction: %g\nTotal correction %g\n",
-                    slide.bias.green, slide.bias.red,
-                    slide.correction.green, slide.correction.red,
-                    slide.correction.avg))
+      print(sprintf("Estimated slide factor\n: green based: %g, red based: %g\nAverage correction %g\n",
+                    slide.correction.green, slide.correction.red, slide.correction.avg))
     }
 
     excluded <- !application.subset[,i]
@@ -239,8 +233,6 @@ dyebias.apply.correction <-  function
     summary <- rbind(summary,
                      c(as.character(i),
                        as.character(file),
-                       as.character(slide.bias.green),
-                       as.character(slide.bias.red),
                        as.character(slide.correction.green),
                        as.character(slide.correction.red),
                        as.character(slide.correction.avg),
@@ -392,25 +384,22 @@ dyebias.application.subset <- function
     stop("could not find enough red estimator genes", here, call. = TRUE)
   }
 
-  green.effect = median(reporter.info[ green.subset , "dyebias"])
-  red.effect = median(reporter.info[ red.subset, "dyebias"])
-
   strongest=list(
     green.ids = large.dyebias.green.ids
     , green.cutoff = large.dyebias.cutoff.green
     , green.subset = green.subset
-    , green.effect = green.effect
+    , green.iGSDBs = reporter.info[ green.subset , "dyebias"]
     , red.ids = large.dyebias.red.ids
     , red.cutoff = large.dyebias.cutoff.red
     , red.subset = red.subset
-    , red.effect = red.effect
+    , red.iGSDBs = reporter.info[ red.subset , "dyebias"]
     )
 
   if(verbose) {
-    print(sprintf("Top %g %% reporters (%d spots; %d of them candidates, %d of them in the right range, %d both) used to estimate the slide bias:\n\tgreen:\tcutoff: %g, nprobes: %d (%d spots), median: %g\n\tred:\tcutoff: %g, nprobes: %d (%d spots), median: %g\n",
+    print(sprintf("Top %g %% reporters (%d spots; %d of them candidates, %d of them in the right range, %d both) used to estimate the slide bias:\n\tgreen:\tcutoff: %g, nprobes: %d (%d spots)\n\tred:\tcutoff: %g, nprobes: %d (%d spots)\n",
                   dyebias.percentile, length(reporter.info[[1]]), sum(estimator.subset), sum(rightrange), sum(subset), 
-                  strongest$green.cutoff, length(strongest$green.ids), sum(strongest$green.subset), strongest$green.effect, 
-                  strongest$red.cutoff,   length(strongest$red.ids),   sum(strongest$red.subset),   strongest$red.effect
+                  strongest$green.cutoff, length(strongest$green.ids), sum(strongest$green.subset), 
+                  strongest$red.cutoff,   length(strongest$red.ids),   sum(strongest$red.subset)
                   ))
   }
   return( strongest)
