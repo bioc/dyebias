@@ -20,7 +20,8 @@ dyebias.estimate.iGSDBs <- function
 
   here=", in dyebias.R:dyebias.estimate.iGSDBs"
   
-  if (class(data.norm) != "marrayNorm") {
+  library(methods)
+  if (! is(data.norm, "marrayNorm") ) {
     stop("Need marrayNorm object", here, call.= TRUE)
   }
 
@@ -159,6 +160,13 @@ dyebias.apply.correction <-  function
   reporter.info$rank <- NULL
 
 
+#   if( is.null(iGSDBs$avgexpr) || all(iGSDBs$avgexpr == 0.00)) { 
+#      if(verbose) {
+#         print("average expression missing or deliberately ignored, basing on actual data")
+#      }    
+#      ......
+#   }
+
   estimators <- .find.estimators(reporter.info=reporter.info,
                                  estimator.subset=estimator.subset,
                                  dyebias.percentile=dyebias.percentile,
@@ -180,8 +188,8 @@ dyebias.apply.correction <-  function
                         red.correction="",
                         avg.correction="",
                         var.ratio="", reduction.perc="", p.value="")
-
   summary.names  <- names(summary) 
+  numeric.names <- summary.names[-(1:2)]
 
   summary  <- summary[ summary$slide != "",] #empty it
 
@@ -249,13 +257,16 @@ dyebias.apply.correction <-  function
   } ## i in 1:nslides
 
   names(summary) <- summary.names
+  for (header in numeric.names) {
+    summary[,header] <- as.numeric(summary[,header])
+  }
   
-  data.dyecorr <- data.norm
+  data.dyecorr <- data.norm             #start with existing object, then modify it
 
   maM(data.dyecorr) <- Mcor
   maA(data.dyecorr) <- maA(data.norm)
   
-  if( .have.umcu.version() ) {          # our own marray version has "maR<-" and "maG<-"
+  if (is(data.norm, "marrayNormExt") ) { # our own marray version has "maR<-" and "maG<-"
     maR(data.dyecorr) <- Rcor           # functions, which will set the corresponding 
     maG(data.dyecorr) <- Gcor           # slots (absent in the 'real' marray)
   } 
@@ -424,17 +435,12 @@ dyebias.application.subset <- function
 
 .limma.to.dataframe <- function(fit, results = NULL, digits = 3, adjust = "none") {
 
-  my.is <- function(thing, expected.class){      # is() from methods gives load errors ...
-    if(is.null(thing)){return(FALSE);}
-    class <- attributes(thing)$class
-    if(is.null(class)){return(FALSE)}
-    return (class==expected.class)
-  }
+  ## my.is <- function(thing, expected.class) # see revision. 3338 and earlier
 
-  if (!my.is(fit, "MArrayLM"))
+  if (!is(fit, "MArrayLM"))
     stop("fit should be an MArrayLM object")
 
-  if (!is.null(results) && !my.is(results, "TestResults"))
+  if (!is.null(results) && !is(results, "TestResults"))
     stop("results should be a TestResults object")
 
   if (is.null(fit$t) || is.null(fit$p.value))
@@ -533,9 +539,3 @@ dyebias.application.subset <- function
     return(design[order(rownames(design)), ]) 
   }
 }                                       #set.design
-
-.have.umcu.version <- function() {
-  ## tell if we're running our own modified version of marray or not
-  ## (not a very precise test, but never mind)
-  return(package.version(pkg="marray")=="1.5.8")
-}
