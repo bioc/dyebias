@@ -1,12 +1,14 @@
 citHeader("We kindly request that you cite the following publication whenever you use the dyebias package in your own work.")
 
-citEntry(entry="article",
+citEntry(entry="Article",
     title = "Adaptable gene-specific dye bias correction for two-channel DNA microarrays",
     author = "Margaritis, T., Lijnzaad, P., van~Leenen, D., Bouwmeester, D., Kemmeren, P., van~Hooff, S.R and Holstege, F.C.P.",
     year = 2009,
-    pages ="0--0",
     journal = "Molecular Systems Biology",
-    volume = "In press."
+    volume = "5",
+    pages = 266,
+    doi = {10.1038/msb.2009.21}
     )
+
 
 citFooter("The latest version of this package and the accompanying dyebiasexamples package are available from http://www.holstegelab.nl/publications/margaritis_lijnzaad/ and from the Bioconductor websites")
