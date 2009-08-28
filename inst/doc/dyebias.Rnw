@@ -52,8 +52,8 @@
 \begin{center}
 1. \email{p.lijnzaad@umcutrecht.nl}\\
 2. \email{a.margaritis@umcutrecht.nl}\\
-Holstege Genomics Laboratory\\
-Dept. of Biomedical Genetics \\
+Holstege Laboratory\\
+Dept. of Physiological Chemistry \\
 University Medical Center (UMC) \\
 Universiteitsweg 100 \\
 3584 CG Utrecht \\
@@ -124,7 +124,7 @@ feedback.
 \section{Installing}
 
 If you are reading this document and have not yet installed any
-software on your computer, visit \url{http://biocondcutor.org} and
+software on your computer, visit \url{http://bioconductor.org} and
 follow the instructions for installing \Rcode{R} and Bioconductor.  Once
 you have installed both \Rcode{R} and Bioconductor, install the
 \Rpackage{dyebias} package with
@@ -156,13 +156,16 @@ correct dyebias, just run the \Rcode{example()}s for any of the functions in
 the package. In particular, try \Rcode{example(dyebias.rgplot)},
 \Rcode{example(dyebias.boxplot)} and \Rcode{example(dyebias.trendplot)}.
 They make use of our own validation data, which is provided by the
-\Rpackage{dyebiasexamples} package. The current document presents two more
+\Rpackage{dyebiasexamples} package, which can be installed through
+Bioconductor similarly. The current document presents two more
 case studies.
 
 \section{Tuteja et al. (2008)}
 
-The first example uses data from \citet{tuteja08}.  It concerns ChIP on chip
-data from five self-spotted mouse cDNA slides.
+The first example uses data from \citet{tuteja08}, a genome side location
+analysis of the transcription factor Foxa2, which is important in liver
+development.  The ChIP on chip data comes from five self-spotted mouse cDNA
+slides.
 
 \subsection{Reading the data}
 
@@ -271,10 +274,11 @@ of the spots. We therefore read both, starting with the raw data:
 @ 
 
 \noindent The weights in the file use a different convention, so cast them
-back to ours, which is \Rcode{weight == 0} for bad spots, \Rcode{weight == 1}
-for good spots. (Bad spots are never used as estimator genes, and you could
-for instance decide not to dye bias-corrected them). Also attach the layout
-the \Rcode{data.raw} object, and show what we have:
+back to ones used by \Rcode{marray}, which is \Rcode{weight == 0} for bad
+spots, \Rcode{weight == 1} for good spots. (Bad spots are never used as
+estimator genes, and you could for instance decide not to dye bias-corrected
+them). Also attach the layout the \Rcode{data.raw} object, and show what we
+have:
 
 <<>>=
 
@@ -387,13 +391,15 @@ around 0.2.  The data shown here shows is fairly similar.
 
 \subsection{Applying the dye bias correction}
 
-Before applying the correction, we need to determine which genes
-(probes/reporters!) are good enough to base the the slide bias estimate on.
-We call them the estimator genes. In our lab, we discard reporters not
+Before applying the correction, we need to choose which genes
+(probes/reporters!) are good enough to base the slide bias estimate on.  We
+call them the estimator genes. Generally, we discard reporters that are
+likely to have a high biological variability. Generally, reporters not
 representing genes, and those corresponding to mitochondrial genes,
-transposons, cross-hybridizing and non-unique oligo sequences. In the current
-case, we know nothing about the reporters, so we only insist that they
-correspond to genes; that group is called \Rcode{Experimental}:
+transposons, cross-hybridizing and non-unique oligo sequences are therefore
+discarded. In the current case, we know nothing about the reporters, so we
+only insist that they correspond to genes; that group is called
+\Rcode{Experimental}:
 
 <<>>=
 
@@ -403,23 +409,23 @@ correspond to genes; that group is called \Rcode{Experimental}:
 
 @ 
 
-\noindent We now specify which spots we would like to dye bias-correct. The
-easiest is to correct all spots. However, we have noticed that for signals
-that are too high or too low, over-correction can occur. Signals that are too
-high are due to saturation of the scanner, whereas those that are too low may
-be too noisy due to differences in background signal. We want to be a bit
-more selective, only correcting genes where we are certain that we have a
-trustworthy signal. We therefore insist that the weight of the spot is 1, and
-that they lie in the right range. Here, we choose a 
-signal-to-noise ratio (here defined as foreground over background signal)
-$\ge$ 1.5 and an average expression \Rcode{A} $\le$ 15.
-
 A convenience function is provided to get an index for the spots that are
 trustworthy estimator genes. The current data set does have background
 signals, so we specify \Rcode{use.background=TRUE}.  (If background signals would
 not have been available, we should have specified \Rcode{use.background=FALSE},
 which causes the minimum foreground signal to be used as a proxy for the
 background signal).
+
+\noindent We now specify which spots we would like to dye
+bias-correct. Generally it is best to correct all spots. However, we have
+noticed that for signals that are too high or too low, over-correction can
+occur. Signals that are too high are due to saturation of the scanner,
+whereas those that are too low may be too noisy due to differences in
+background signal. We want to be a bit more selective, only correcting genes
+where we are certain that we have a trustworthy signal. We therefore insist
+that the weight of the spot is 1, and that they lie in the right range. Here,
+we choose a signal-to-noise ratio (here defined as foreground over background
+signal) $\ge$ 1.5 and an average expression \Rcode{A} $\le$ 15.
 
 
 <<>>=
@@ -446,12 +452,14 @@ background signal).
                                          verbose=TRUE)
 @ 
 
-The \Rcode{correction} object contains the complete results. It is a \Rcode{list}
-with 3 members: \Rcode{data.corrected}, the corrected data in
+The \Rcode{correction} object contains the complete results. It is a
+\Rcode{list} with 4 members: \Rcode{data.corrected}, the corrected data in
 \Rcode{marrayNorm} format; \Rcode{estimators}, which contains the estimators
-and is used by the plotting routines; and lastly  \Rcode{summary}, a
-\Rcode{data.frame} with various statistics. The most useful ones are
-probably \Rcode{avg.correction, var.ratio, reduction.perc} and \Rcode{p.value}:
+and is used by the plotting routines; \Rcode{summary}, a \Rcode{data.frame}
+with statistics concerning the dye bias correction, and lastly (for
+convenience) \Rcode{data.uncorrected}, the input data.  For the summary, the
+most useful ones are probably \Rcode{avg.correction, var.ratio,
+reduction.perc} and \Rcode{p.value}:
 
 <<>>=
   correction$summary[,c("slide", "avg.correction", "var.ratio", "reduction.perc", "p.value")]
@@ -587,7 +595,8 @@ left as an exercise to the reader.
 %%% for Bioconductor. If you're interested, simply get rid of all the 'eval=FALSE'
 %%% below. 
 
-The next example is based on data from \citet{chen07}, which is available
+The next example is based on genome-wide location data of Orc6, which plays a
+role in DNA replication initiation \citep{chen07}.  The data is available
 from NCBI's Gene Expression Omnibus \citep{geo07} under accession
 \texttt{GSE9318}.  It consists of two sets of Agilent slides: 4 done on
 platform \Rcode{GPL3499}, and 9 slides done on platform \Rcode{GPL5991}. Only
@@ -765,8 +774,8 @@ it has to know what the references are in each case; hence the
 out which ``experimental'' (i.e., non-reference) sample goes with which
 reference. Therefore, they all have to start with the name of their
 respective reference sample (see the documentation). Having said, we will
-ignore the \Rcode{references} argument for now, andestimate the iGSDBs using
-simple averaging, simply as:
+ignore the \Rcode{references} argument for now, and estimate the iGSDBs using
+averaging, simply as:
 
 <<eval=FALSE>>=
 
@@ -778,7 +787,7 @@ simple averaging, simply as:
 \subsection{Reading the rest of the data}
 
 We now have an estimate of the intrinsic gene specific dye biases, and we can
-use it to correct to all the hybridizations done on platform \Rcode{GPL5991}.
+use it to correct all the hybridizations done on platform \Rcode{GPL5991}.
 However, that is not yet converted to \Rcode{marray} objects, so do that
 first, and also make sure \Rcode{A} is set and the dye swaps are swapped back:
 
@@ -896,7 +905,7 @@ What is also visible is that the data is not properly normalized. The left
 panel shows a cloud whose bottom has a the downward-sloping trend frequently
 found in ChIP-on-chip data. This should not be present in normalized
 data\footnote{We did not renormalise this data as the point of this document
-  is to demonstrate dye bias correction of existing data.}.  The dye bias
+  is to demonstrate dye bias correction of existing, normalized data.}.  The dye bias
 correction procedure tries to also correct this ChIP-on-chip artifact,
 resulting in suboptimal behaviour (see below).
 
@@ -905,7 +914,7 @@ be used, but another function is provided that can show to what extent the
 data supports our claim that the total dye bias is the product of the slide
 bias and the intrinsic bias. We order all slides by the slide bias, and plot
 each spot. However, the number of spots is too large to judge whether their
-the behaviour is linear. The function \Rcode{dyebias.trendplot} therefore bins
+behaviour is linear. The function \Rcode{dyebias.trendplot} therefore bins
 all probes by their intrinsic bias, and plots the median of each bin for each
 slide:
 

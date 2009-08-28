@@ -58,7 +58,7 @@
     should be a vector listing all the common references, and the name
     of the factor value that is not the common reference should have its
     own common reference as a prefix. E.g., if two mutant strains
-    \code{mutA} and \code{mutB} were assaysed, each against a different
+    \code{mutA} and \code{mutB} were assayed, each against a different
     reference \code{ref1} and \code{ref2}, the \code{reference}-argument
     would be \code{c("ref1", "ref2")}, and the \code{Cy3} and \code{Cy5}
     attributes of \code{maInfo(maTargets(data.norm))} must contain

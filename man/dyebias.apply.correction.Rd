@@ -170,6 +170,8 @@
         identical)}
     }
   }
+
+  \item{data.uncorrected}{The uncorrected input \code{marrayNorm}, for convenience}
 }
 
 \details{

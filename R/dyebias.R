@@ -12,6 +12,9 @@ dyebias.estimate.iGSDBs <- function
  reference="ref",
  verbose=FALSE) {
 
+  save.option.stringsAsFactors <-  getOption("stringsAsFactors")
+  options(stringsAsFactors = FALSE)
+
   averaging.function <- mean               # to use when is.balanced==TRUE
 
   if (verbose) {
@@ -54,7 +57,7 @@ dyebias.estimate.iGSDBs <- function
     Aavg <- maA(data.norm.sorted)
   } else { ## need to average the spots (which takes time, so only do if needed)
     if(verbose) {
-      print("Averaging replicate spots ...")
+      print(sprintf("Found %d spots, %d of them unique. Averaging replicate spots ...\n", length(reporter.ids), n.unique))
     }
     
     Mavg <- matrix(0, n.unique, n.slides)
@@ -100,6 +103,12 @@ dyebias.estimate.iGSDBs <- function
   
   if (verbose) { print("fitting linear model ...")}
   fit <- lmFit(data.limma, design)
+  { d <- unique(fit$coefficients[,"Dye"])
+    if(length(d)==1) {
+      stop("All dyebiases are ", d, ", this can't be right. You probably had a 'Coefficients not estimable'-error", here, call)
+    }
+  }
+
   efit <- eBayes(fit)
   results <- .limma.to.dataframe(efit)
   
@@ -112,8 +121,15 @@ dyebias.estimate.iGSDBs <- function
     print("Done estimating the intrinsic gene-specific dyebiases.")
   }
   
-  final <- data.frame(reporterId = results$Genes.reporterId, dyebias = results$Coef.Dye, A=results$A,
+  final <- data.frame(reporterId = results$Genes.reporterId,
+                      dyebias = results$Coef.Dye,
+                      A=results$A,
+                      p.value=results$p.value.Dye,
                       stringsAsFactors=FALSE)
+
+  # restore previous one
+  options(stringsAsFactors = save.option.stringsAsFactors)
+
   return(final)
 }                                       # dyebias.estimate.iGSDBs
 
@@ -130,17 +146,27 @@ dyebias.apply.correction <-  function
  ) {  
   here <- ", in dyebias.R:dyebias.apply.correction"
 
+  save.option.stringsAsFactors <-  getOption("stringsAsFactors")
+  options(stringsAsFactors = FALSE)
+
+  
   .check.required.columns(frame=iGSDBs,
                           wanted.columns=c("reporterId", "dyebias", "A"),
                           error.suffix=here)
+
+  { d <- unique(iGSDBs$dyebias)
+    if(length(d) == 1 && d != 0.00 ) {
+      stop("All dyebiases have the same value:", d, ". Refusing to apply correction", here)
+    }
+  }
   
   if(any(duplicated(iGSDBs$reporterId))) {
     stop("table of intrinsic GSDB's contains duplicates, which confuses me greatly", here)
   }
 
   if(length(application.subset)==1) {
-    application.subset <- maM(data.norm)
-    application.subset[,] <- TRUE
+    application.subset <- matrix(TRUE, nrow=nrow(maM(data.norm)),
+                                 ncol=ncol(maM(data.norm)))
   } else if ( length(application.subset) == maNspots(data.norm) )   {
     application.subset <- rep(application.subset, maNsamples(data.norm))
     dim(application.subset) <- dim(maM(data.norm))
@@ -277,8 +303,13 @@ dyebias.apply.correction <-  function
     print("Done dyebias-correcting the slides. Summary of the variance-reduction percentages:\n")
     print(summary(as.numeric(summary$reduction.perc)))
   }
+
+  options(stringsAsFactors = save.option.stringsAsFactors)
   
-  return(list(data.corrected=data.dyecorr, estimators=estimators, summary=summary))
+  return(list(data.corrected=data.dyecorr, 
+              estimators=estimators, 
+              summary=summary,
+              data.uncorrected=data.norm))
 }                                      # dyebias.apply.correction
 
 dyebias.application.subset <- function
@@ -288,7 +319,10 @@ dyebias.application.subset <- function
  maxA=15
  ) { 
   here <- ", in utils.R:dyebias.application.weights"
+  save.option.stringsAsFactors <-  getOption("stringsAsFactors")
+  options(stringsAsFactors = FALSE)
 
+  
   n.slides <- length(maInfo(maTargets(data.raw))[[1]])
 
   weights <- matrix(1.0, maNspots(data.raw), maNsamples(data.raw) )
@@ -318,6 +352,9 @@ dyebias.application.subset <- function
     
     weights[excluded, i] = 0
   }
+
+  options(stringsAsFactors = save.option.stringsAsFactors)
+
   return(weights)
 }                           #dyebias.application.subset
 
@@ -425,7 +462,7 @@ dyebias.application.subset <- function
   avg.data <- tapply(frame[, "value"], frame[, "id"], averaging.function, na.rm=TRUE)
   ids = rownames(avg.data)
   if (! all(order(ids) ==  1:length(ids))) { 
-    stop("averaging mixed up id's", here, call. = TRUE)
+    stop("averaging mixed up the id's", here, call. = TRUE)
   }
 
   ## mean of a factor level with only NA's becomes NaN, which is bit useless; make them NA's:
