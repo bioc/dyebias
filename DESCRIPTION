@@ -1,12 +1,12 @@
 Package: dyebias
 Title: The GASSCO method, for correcting for slide-depedent gene-specific dye bias
-Version: 1.3.3
+Version: 1.3.4
 Date: 26 May 2009
 Author: Philip Lijnzaad <p.lijnzaad@umcutrecht.nl> and Thanasis Margaritis <a.margaritis@umcutrecht.nl>
 Description: Gene-specific dye-bias correction of two-color microarray data using the GASSCO
   method described in Margaritis et al. Mol. Sys. Biol. 5:266 (2009) doi:10.1038/msb.2009.21
 Maintainer: Philip Lijnzaad <p.lijnzaad@umcutrecht.nl>
-License: GPL v3
+License: GPL-3
 Depends: R (>= 1.4.1), marray, Biobase
 Suggests: limma, convert, GEOquery, dyebiasexamples, methods
 URL: http://www.holstegelab.nl/publications/margaritis_lijnzaad
