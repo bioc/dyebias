@@ -330,7 +330,7 @@ dyebias.application.subset <- function
   save.option.stringsAsFactors <-  getOption("stringsAsFactors")
   options(stringsAsFactors = FALSE)
 
-  .check.reporter.labels(data.norm)
+  .check.reporter.labels(data.raw)
   
   n.slides <- length(maInfo(maTargets(data.raw))[[1]])
 
