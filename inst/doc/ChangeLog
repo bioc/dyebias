@@ -1,5 +1,8 @@
 2009-12-01  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
 
+	* Adjusted documentation to get rid of some overfull
+	hboxes. Replaced the 'submitted' reference with actual one. (v1.5.5)
+
 	* Now using stringsAsFactors=FALSE for each and every data.frame()
 	call (v1.5.4)
 

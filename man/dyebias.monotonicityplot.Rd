@@ -166,10 +166,10 @@
 
 
 \references{
-   Margaritis, T., Lijnzaad, P., van~Leenen, D., Bouwmeester, D.,
-  Kemmeren, P., van~Hooff, S.R and Holstege, F.C.P. (2009).
+   Margaritis, T., Lijnzaad, P., van Leenen, D., Bouwmeester, D.,
+  Kemmeren, P., van Hooff, S.R and Holstege, F.C.P. (2009).
   Adaptable gene-specific dye bias correction for two-channel DNA microarrays.
-  \emph{Molecular Systems Biology, submitted}
+  \emph{Molecular Systems Biology}, 5:266, 2009. doi: 10.1038/msb.2009.21.
 }
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the

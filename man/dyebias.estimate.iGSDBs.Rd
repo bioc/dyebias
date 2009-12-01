@@ -122,7 +122,7 @@
 
   There are two cases to distinguish, the balanced case, and the
   unbalanced case. In the balanced case, the iGSDB estimate is simply
-  the average \eqn{M} (\eqn{M = log_2(R/G) = log_2(Cy5/Cy3)}) over all
+  the average \eqn{M} (where \cr \eqn{M = log_2(R/G) = log_2(Cy5/Cy3)}) over all
   slides.  A set of slides is balanced if all factor values are present
   in as many dye-swapped as non-dye-swapped slides.  A set of self-self
   slides is in fact a degenerate form of this, and is therefore also
@@ -142,7 +142,7 @@
   Having obtained the iGSDB estimates, the corrections can be applied
   to either to the hybridizations given by the \code{data.norm} argument,
   or to a different set of slides that is thought to have very similar
-  iGSDBs. Applying the corrections is done with \code{\link{dyebias.apply.correction}}. 
+  iGSDBs. Applying the corrections is done with \cr \code{\link{dyebias.apply.correction}}. 
 }
 
 \seealso{dyebias.apply.correction}
@@ -161,16 +161,16 @@
 
 \references{
 
-  Margaritis, T., Lijnzaad, P., van~Leenen, D., Bouwmeester, D.,
-  Kemmeren, P., van~Hooff, S.R and Holstege, F.C.P. (2009)
+  Margaritis, T., Lijnzaad, P., van Leenen, D., Bouwmeester, D.,
+  Kemmeren, P., van Hooff, S.R and Holstege, F.C.P. (2009)
   Adaptable gene-specific dye bias correction for two-channel DNA microarrays.
-  \emph{Molecular Systems Biology, submitted}
+  \emph{Molecular Systems Biology}, 5:266, 2009. doi: 10.1038/msb.2009.21.
 
   Dudoit, S. and Yang, Y.H. (2002)  Bioconductor R packages for
   exploratory analysis and normalization of cDNA microarray data. In:
   Parmigiani, G., Garrett, E.S. , Irizarry, R.A., and Zeger, S.L. (eds.)
   \emph{The Analysis of Gene Expression Data: Methods and Software},
-  Springer, New~York.
+  Springer, New York.
 
 %%   Smyth, G.K. (2004) Linear models and empirical Bayes methods for
 %%   assessing differential expression in microarray
@@ -180,7 +180,7 @@
    Smyth, G.K. (2005) Limma: linear models for microarray data.
    In: Gentleman, R., Carey, V., Dudoit, S., Irizarry, R. and
    Huber, W. (eds). \emph{Bioinformatics and Computational Biology
-   Solutions using R and Bioconductor}, Springer, New~York.
+   Solutions using R and Bioconductor}, Springer, New York.
 
 }
 

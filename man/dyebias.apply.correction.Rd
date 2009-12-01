@@ -4,7 +4,7 @@
 \title{Perform dye bias correction using the GASSCO method}
 
 \description{Corrects the gene- and slide specific dye bias in a data set, using
-  the GASSCO method by Margaritis et~al.
+  the GASSCO method by Margaritis et al.
 }
 
 \synopsis{dyebias.apply.correction(data.norm,
@@ -179,7 +179,7 @@
 \details{
 
   This function corrects the gene-specific dye bias of two-colour
-  microarrays using the GASSCO method. This method is general, robust
+  microarrays with the GASSCO method. This method is general, robust
   and fast, and is based on the observation that the total bias per gene
   is the product of a slide-specific factor (strongly related to the
   labeling percentage) and an intrinsic gene-specific factor (iGSDB),
@@ -270,10 +270,10 @@
 }
 
 \references{
-  Margaritis, T., Lijnzaad, P., van~Leenen, D., Bouwmeester, D.,
-  Kemmeren, P., van~Hooff, S.R and Holstege, F.C.P. (2009).
+  Margaritis, T., Lijnzaad, P., van Leenen, D., Bouwmeester, D.,
+  Kemmeren, P., van Hooff, S.R and Holstege, F.C.P. (2009).
   Adaptable gene-specific dye bias correction for two-channel DNA microarrays.
-  \emph{Molecular Systems Biology, submitted}
+  \emph{Molecular Systems Biology}, 5:266, 2009. doi: 10.1038/msb.2009.21.
 }
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the

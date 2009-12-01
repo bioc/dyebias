@@ -10,7 +10,7 @@
   Plots the $log_2(R)$ vs. $log_2(G)$ (or alternatively $M$ vs. $A$)
   signal of one slide, highlighting the reporters with the strongest red
   and green dye bias. Two lines indicate two-fold change. See also
-  Margaritis et~al. (2009), Fig.~1
+  Margaritis et al. (2009), Fig. 1
 
 }
 
@@ -75,8 +75,8 @@
 }
 
 
-\note{The highlighted spots are \emph{all spots} with an iGSDB in the
-  top- or bottom- \code{dyebias.percentile} of iGSDBS, that is, not just
+\note{The highlighted spots are \emph{all spots} with an iGSDB that lies
+  in the top- or bottom- \code{dyebias.percentile} of iGSDBS. That is, not just
   the estimator genes are highlighted.}
 
 \author{Philip Lijnzaad \email{p.lijnzaad@umcutrecht.nl} }
@@ -153,12 +153,11 @@
                  output=NULL)
 }
 
-
 \references{
-  Margaritis, T., Lijnzaad, P., van~Leenen, D., Bouwmeester, D.,
-  Kemmeren, P., van~Hooff, S.R and Holstege, F.C.P. (2009).
+  Margaritis, T., Lijnzaad, P., van Leenen, D., Bouwmeester, D.,
+  Kemmeren, P., van Hooff, S.R and Holstege, F.C.P. (2009).
   Adaptable gene-specific dye bias correction for two-channel DNA microarrays.
-  \emph{Molecular Systems Biology, submitted}
+  \emph{Molecular Systems Biology}, 5:266, 2009. doi: 10.1038/msb.2009.21.
 }
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the

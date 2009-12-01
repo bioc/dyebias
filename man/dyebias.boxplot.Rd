@@ -10,7 +10,7 @@
   could get rid of it.  Typically, two boxplots would be shown, one
   before, one after dye bias correction. For esthetic reasons, the
   boxplots are usually ordered by the overal slide bias of the
-  uncorrected data set. See also Margaritis et~al. (2009), Fig.~1 and 3.
+  uncorrected data set. See also Margaritis et al. (2009), Fig. 1 and 3.
 
 }
 
@@ -138,10 +138,10 @@ dyebias.boxplot <- function(data, iGSDBs, dyebias.percentile=5, application.subs
 
 
 \references{
-  Margaritis, T., Lijnzaad, P., van~Leenen, D., Bouwmeester, D.,
-  Kemmeren, P., van~Hooff, S.R and Holstege, F.C.P. (2009)
+  Margaritis, T., Lijnzaad, P., van Leenen, D., Bouwmeester, D.,
+  Kemmeren, P., van Hooff, S.R and Holstege, F.C.P. (2009)
   Adaptable gene-specific dye bias correction for two-channel DNA microarrays.
-  \emph{Molecular Systems Biology, submitted}
+  \emph{Molecular Systems Biology}, 5:266, 2009. doi: 10.1038/msb.2009.21.
 }
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the
