@@ -74,6 +74,11 @@
  None.
 }
 
+
+\note{The highlighted spots are \emph{all spots} with an iGSDB in the
+  top- or bottom- \code{dyebias.percentile} of iGSDBS, that is, not just
+  the estimator genes are highlighted.}
+
 \author{Philip Lijnzaad \email{p.lijnzaad@umcutrecht.nl} }
 
 \seealso{

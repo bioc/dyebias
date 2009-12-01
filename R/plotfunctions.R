@@ -16,6 +16,7 @@ dyebias.rgplot <- function
   ...) { 
   file.device <- .set.output(output)
   
+  .check.reporter.labels(data)
   
   dyebias <- .merge.dyebias(data=data, iGSDBs=iGSDBs)
   
@@ -65,7 +66,8 @@ dyebias.maplot <- function
   ### as rgplot.it, but now giving an MA plot
   file.device <- .set.output(output)
   
-
+  .check.reporter.labels(data)
+  
   dyebias <- .merge.dyebias(data=data,iGSDBs=iGSDBs)
   
   subset <- if(length(application.subset)==1) T else application.subset[,slide]
@@ -105,6 +107,8 @@ dyebias.boxplot <- function(data, iGSDBs, dyebias.percentile=5, application.subs
                        ...) { 
   file.device <- .set.output(output)
 
+  .check.slide.labels(data)
+  
   dyebias <- .merge.dyebias(data=data,iGSDBs=iGSDBs)
   
   slide.bias <- .slide.bias(data, dyebias, dyebias.percentile, application.subset=application.subset)
@@ -162,6 +166,8 @@ dyebias.trendplot <- function(data,
                               ylab="M",
                               sub=NULL, #title, default should suffice
                               ...) { 
+
+  .check.slide.labels(data)
 
   plot=list(median=T, mean=T, gene=T, median.gene=T, worst.gene=T) # what to plot, in the end
   
@@ -359,7 +365,7 @@ dyebias.monotonicityplot <- function(data,
     postscript(output)
     return(T)
   }
-  stop("plotfunctions.R: .set.output: Unknown extension. Only know .pdf .png .eps .ps \n", call. =TRUE)
+  stop("plotfunctions.R: .set.output: Unknown extension. Only know NULL, X11, windows, quartz, or a filename ending in .pdf, .png, .eps or .ps\n", call. =TRUE)
 }                                       #.set.output
 
 .merge.dyebias <- function(data, iGSDBs) {

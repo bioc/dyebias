@@ -79,6 +79,10 @@
   \item{reporterId}{The name of the reporter}
   \item{dyebias}{The intrinsic gene-specific dye bias (iGSDB) of this reporter}
   \item{A}{The average expression level of this reporter in the given data set}
+  \item{p.value}{The \emph{p}-value for the \code{dyebias} ($H_0$:
+          \code{dyebias} = 0). All \emph{p}-value are set to NA if
+  they were not estimated (i.e., if limma was not run because
+  \code{is.balanced} was TRUE)}
 
   This data frame is typically used as input to \code{\link{dyebias.apply.correction}}.
 }

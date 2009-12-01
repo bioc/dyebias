@@ -103,7 +103,7 @@
 
 \note{
 
-  This function can take very long to compute, since it calculates
+  This function takes very long to compute, since it calculates
   regressions for each gene.
 
 }

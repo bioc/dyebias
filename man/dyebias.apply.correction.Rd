@@ -94,13 +94,15 @@
 
   \item{minmaxA.perc}{
 
-    To obtain a robust estimate of the slide bias, the range of the
+   To obtain a robust estimate of the slide bias, the range of the
     average expression \eqn{A} is trimmed by \code{minmaxA.perc} percent
     on both sides; only reporters lying inside this trimmed range are
     considered as estimators of the slide bias. The default value is 25,
-    meaning that top \code{dyebias.percentile} red- and green-biased
-    spots within the the middle two average expression quartiles are
-    used. This should suffice in practically all cases.
+    meaning that only probes with an average expression within the
+    interquartile range are considered as estimator genes (from these,
+    the top \code{dyebias.percentile} red- and green-biased are then
+    actually used).  The default value should suffice in practically all
+    cases.
 
   }
 

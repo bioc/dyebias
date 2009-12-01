@@ -1,6 +1,11 @@
 2009-12-01  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
 
-	* trunk: merged rel2_5 fixes.
+        * Added .check.reporter.labels and .check.slide.labels. Clarified
+	documentation and error messages. Data frame returned from
+	dyebias.estimate.iGSDBs now always contains a column p.value,
+	filled with NA's if not calculated. 
+
+	* trunk: merged rel2_5 fixes. 
 
 	* rel2_5 branch: dyebias.application.subset now returns a matrix of
 	logicals (as advertised), rather than a matrix of 0's and 1's.

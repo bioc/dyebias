@@ -81,6 +81,7 @@ dyebias.estimate.iGSDBs <- function
     return(data.frame(reporterId=unique.ids,
                       dyebias=apply(Mavg, 1, averaging.function, na.rm=TRUE),
                       A=apply(Aavg,1, averaging.function, na.rm=TRUE),
+                      p.value=1,
                       stringsAsFactors=FALSE
                       ))
   }
