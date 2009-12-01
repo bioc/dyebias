@@ -12,6 +12,8 @@ dyebias.estimate.iGSDBs <- function
  reference="ref",
  verbose=FALSE) {
 
+  .check.reporter.labels(data.norm)
+
   save.option.stringsAsFactors <-  getOption("stringsAsFactors")
   options(stringsAsFactors = FALSE)
 
@@ -146,6 +148,8 @@ dyebias.apply.correction <-  function
  ) {  
   here <- ", in dyebias.R:dyebias.apply.correction"
 
+  .check.reporter.labels(data.norm)
+
   save.option.stringsAsFactors <-  getOption("stringsAsFactors")
   options(stringsAsFactors = FALSE)
 
@@ -181,7 +185,7 @@ dyebias.apply.correction <-  function
   reporter.info$dyebias <- NULL
   reporter.info$rank <- 1:length(reporter.info[[1]])
   reporter.info <- merge(reporter.info, iGSDBs, by="reporterId", all.x=TRUE)
-  reporter.info [ is.na(reporter.info$dyebias), "dyebias"] <- 0.00
+  reporter.info[ is.na(reporter.info$dyebias), "dyebias"] <- 0.00
   reporter.info <- reporter.info[order(reporter.info$rank),] # sort back to original order
   reporter.info$rank <- NULL
 
@@ -292,9 +296,13 @@ dyebias.apply.correction <-  function
   maM(data.dyecorr) <- Mcor
   maA(data.dyecorr) <- maA(data.norm)
   
-  if (is(data.norm, "marrayNormExt") ) { # our own marray version has "maR<-" and "maG<-"
-    maR(data.dyecorr) <- Rcor           # functions, which will set the corresponding 
-    maG(data.dyecorr) <- Gcor           # slots (absent in the 'real' marray)
+  if (is(data.norm, "marrayNormExt") ) {
+    ## our own marray subclass 'marrayNormExt' has "maR<-" and "maG<-"
+    ## functions, which will set the corresponding
+    ## slots (absent in the 'real' marray).
+    ## These errors can therefore be ignored when running R CMD check
+    maR(data.dyecorr) <- Rcor           
+    maG(data.dyecorr) <- Gcor          
   } 
 
   ##  maLabels(maTargets(data.dyecorr)) <- slide.names
@@ -318,14 +326,15 @@ dyebias.application.subset <- function
  use.background=FALSE,
  maxA=15
  ) { 
-  here <- ", in utils.R:dyebias.application.weights"
+  here <- ", in utils.R:dyebias.application.subset"
   save.option.stringsAsFactors <-  getOption("stringsAsFactors")
   options(stringsAsFactors = FALSE)
 
+  .check.reporter.labels(data.norm)
   
   n.slides <- length(maInfo(maTargets(data.raw))[[1]])
 
-  weights <- matrix(1.0, maNspots(data.raw), maNsamples(data.raw) )
+  subset <- matrix(TRUE, nrow=maNspots(data.raw), ncol=maNsamples(data.raw) )
 
   for (i in 1:n.slides) {
 
@@ -350,12 +359,12 @@ dyebias.application.subset <- function
     
     excluded <- unmeasurable | saturated
     
-    weights[excluded, i] = 0
+    subset[excluded, i] = FALSE
   }
 
   options(stringsAsFactors = save.option.stringsAsFactors)
 
-  return(weights)
+  return(subset)
 }                           #dyebias.application.subset
 
 ## --- support routines, not exported
@@ -575,4 +584,26 @@ dyebias.application.subset <- function
     }
     return(design[order(rownames(design)), ]) 
   }
-}                                       #set.design
+}                                       # .set.design
+
+
+.check.reporter.labels <- function(data) {
+## 
+  is <- length(unique(maLabels(maGnames(data))))
+  at.least <- floor(maNspots(data) / 10) # random 
+
+  if ( is < at.least ) {
+    stop(sprintf("plotfunctions.R: found %d labels for the reporters, expected at least some %d", is, at.least, call.=TRUE))
+  }
+}
+
+
+.check.slide.labels <- function(data) {
+## 
+  should <- maNsamples(data)
+  is <- length(unique(maLabels(maTargets(data))))
+
+  if ( is != should) {
+    stop(sprintf("plotfunctions.R: found %d labels for the slides, expected %d", is, should, call.=TRUE))
+  }
+}                                       # .check.slide.labels
