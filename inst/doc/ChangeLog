@@ -1,5 +1,8 @@
 2009-12-01  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
 
+	* rel2_5 branch: dyebias.application.subset now returns a matrix of
+	logicals (as advertised), rather than a matrix of 0's and 1's.
+
 	* rel2_5 branch: fixed critical bug in
 	plotfunctions.R:.merge.dyebias() (now using
 	maLabels(maGnames)). Also re-created the vignette.

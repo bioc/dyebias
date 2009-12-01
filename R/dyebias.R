@@ -322,14 +322,14 @@ dyebias.application.subset <- function
  use.background=FALSE,
  maxA=15
  ) { 
-  here <- ", in utils.R:dyebias.application.weights"
+  here <- ", in utils.R:dyebias.application.subset"
   save.option.stringsAsFactors <-  getOption("stringsAsFactors")
   options(stringsAsFactors = FALSE)
 
   
   n.slides <- length(maInfo(maTargets(data.raw))[[1]])
 
-  weights <- matrix(1.0, maNspots(data.raw), maNsamples(data.raw) )
+  subset <- matrix(TRUE, maNspots(data.raw), maNsamples(data.raw) )
 
   for (i in 1:n.slides) {
 
@@ -354,12 +354,12 @@ dyebias.application.subset <- function
     
     excluded <- unmeasurable | saturated
     
-    weights[excluded, i] = 0
+    subset[excluded, i] = FALSE
   }
 
   options(stringsAsFactors = save.option.stringsAsFactors)
 
-  return(weights)
+  return(subset)
 }                           #dyebias.application.subset
 
 ## --- support routines, not exported
