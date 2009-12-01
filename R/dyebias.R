@@ -14,9 +14,6 @@ dyebias.estimate.iGSDBs <- function
 
   .check.reporter.labels(data.norm)
 
-  save.option.stringsAsFactors <-  getOption("stringsAsFactors")
-  options(stringsAsFactors = FALSE)
-
   averaging.function <- mean               # to use when is.balanced==TRUE
 
   if (verbose) {
@@ -81,7 +78,7 @@ dyebias.estimate.iGSDBs <- function
     return(data.frame(reporterId=unique.ids,
                       dyebias=apply(Mavg, 1, averaging.function, na.rm=TRUE),
                       A=apply(Aavg,1, averaging.function, na.rm=TRUE),
-                      p.value=1,
+                      p.value=NA,
                       stringsAsFactors=FALSE
                       ))
   }
@@ -101,7 +98,9 @@ dyebias.estimate.iGSDBs <- function
 
   data.limma <- new("MAList", list(M=Mavg, A=Aavg, weights=matrix(1, n.unique, n.slides),
                                    printer=list(ndups=1, spacing=1),
-                                   genes=data.frame(reporterId=unique.ids, Control="gene"),
+                                   genes=data.frame(reporterId=unique.ids,
+                                     Control="gene",
+                                     stringsAsFactors=FALSE),
                                    targets=targets))
   
   if (verbose) { print("fitting linear model ...")}
@@ -131,7 +130,6 @@ dyebias.estimate.iGSDBs <- function
                       stringsAsFactors=FALSE)
 
   # restore previous one
-  options(stringsAsFactors = save.option.stringsAsFactors)
 
   return(final)
 }                                       # dyebias.estimate.iGSDBs
@@ -150,11 +148,6 @@ dyebias.apply.correction <-  function
   here <- ", in dyebias.R:dyebias.apply.correction"
 
   .check.reporter.labels(data.norm)
-
-  save.option.stringsAsFactors <-  getOption("stringsAsFactors")
-  options(stringsAsFactors = FALSE)
-
-  
   .check.required.columns(frame=iGSDBs,
                           wanted.columns=c("reporterId", "dyebias", "A"),
                           error.suffix=here)
@@ -180,7 +173,8 @@ dyebias.apply.correction <-  function
   }
 
   ##  reporter.info <- maInfo(maGnames(data.norm))
-  reporter.info <- data.frame(reporterId=maLabels(maGnames(data.norm)))
+  reporter.info <- data.frame(reporterId=maLabels(maGnames(data.norm)),
+                              stringsAsFactors=FALSE)
 
   ## put (replace) the dyebiases into reporter.info. If we don't have an iGSDB, make it zero
   reporter.info$dyebias <- NULL
@@ -218,7 +212,8 @@ dyebias.apply.correction <-  function
                         green.correction="",
                         red.correction="",
                         avg.correction="",
-                        var.ratio="", reduction.perc="", p.value="")
+                        var.ratio="", reduction.perc="", p.value="",
+                        stringsAsFactors=FALSE)
   summary.names  <- names(summary) 
   numeric.names <- summary.names[-(1:2)]
 
@@ -313,8 +308,6 @@ dyebias.apply.correction <-  function
     print(summary(as.numeric(summary$reduction.perc)))
   }
 
-  options(stringsAsFactors = save.option.stringsAsFactors)
-  
   return(list(data.corrected=data.dyecorr, 
               estimators=estimators, 
               summary=summary,
@@ -328,8 +321,6 @@ dyebias.application.subset <- function
  maxA=15
  ) { 
   here <- ", in utils.R:dyebias.application.subset"
-  save.option.stringsAsFactors <-  getOption("stringsAsFactors")
-  options(stringsAsFactors = FALSE)
 
   .check.reporter.labels(data.raw)
   
@@ -362,8 +353,6 @@ dyebias.application.subset <- function
     
     subset[excluded, i] = FALSE
   }
-
-  options(stringsAsFactors = save.option.stringsAsFactors)
 
   return(subset)
 }                           #dyebias.application.subset

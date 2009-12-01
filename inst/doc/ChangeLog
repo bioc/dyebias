@@ -1,14 +1,17 @@
 2009-12-01  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
 
+	* Now using stringsAsFactors=FALSE for each and every data.frame()
+	call (v1.5.4)
+
         * Added .check.reporter.labels and .check.slide.labels. Clarified
 	documentation and error messages. Data frame returned from
 	dyebias.estimate.iGSDBs now always contains a column p.value,
-	filled with NA's if not calculated. 
+	filled with NA's if not calculated.  (v1.5.3)
 
-	* trunk: merged rel2_5 fixes. 
+	* trunk: merged rel2_5 fixes.  (v1.5.2)
 
 	* rel2_5 branch: dyebias.application.subset now returns a matrix of
-	logicals (as advertised), rather than a matrix of 0's and 1's.
+	logicals (as advertised), rather than a matrix of 0's and 1's. (v1.5.1)
 
 	* rel2_5 branch: fixed critical bug in
 	plotfunctions.R:.merge.dyebias() (now using

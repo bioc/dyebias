@@ -375,7 +375,7 @@ dyebias.monotonicityplot <- function(data,
                           error.suffix=".merge.dyebias")
   
   ## merge dyebias into it, for selecting the percentiles
-  gnames <- data.frame(reporterId=maLabels(maGnames(data)))
+  gnames <- data.frame(reporterId=maLabels(maGnames(data)), stringsAsFactors=FALSE)
   gnames$dyebias <- NULL # may already be part of it, gives dyebias.{x,y} name after merge
   gnames$A <- NULL
 
