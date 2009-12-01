@@ -181,7 +181,7 @@ dyebias.apply.correction <-  function
   reporter.info$dyebias <- NULL
   reporter.info$rank <- 1:length(reporter.info[[1]])
   reporter.info <- merge(reporter.info, iGSDBs, by="reporterId", all.x=TRUE)
-  reporter.info [ is.na(reporter.info$dyebias), "dyebias"] <- 0.00
+  reporter.info[ is.na(reporter.info$dyebias), "dyebias"] <- 0.00
   reporter.info <- reporter.info[order(reporter.info$rank),] # sort back to original order
   reporter.info$rank <- NULL
 
@@ -292,9 +292,13 @@ dyebias.apply.correction <-  function
   maM(data.dyecorr) <- Mcor
   maA(data.dyecorr) <- maA(data.norm)
   
-  if (is(data.norm, "marrayNormExt") ) { # our own marray version has "maR<-" and "maG<-"
-    maR(data.dyecorr) <- Rcor           # functions, which will set the corresponding 
-    maG(data.dyecorr) <- Gcor           # slots (absent in the 'real' marray)
+  if (is(data.norm, "marrayNormExt") ) {
+    ## our own marray subclass 'marrayNormExt' has "maR<-" and "maG<-"
+    ## functions, which will set the corresponding
+    ## slots (absent in the 'real' marray).
+    ## These errors can therefore be ignored when running R CMD check
+    maR(data.dyecorr) <- Rcor           
+    maG(data.dyecorr) <- Gcor          
   } 
 
   ##  maLabels(maTargets(data.dyecorr)) <- slide.names

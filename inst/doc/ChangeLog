@@ -1,3 +1,9 @@
+2009-12-01  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
+
+	* rel2_5 branch: fixed critical bug in
+	plotfunctions.R:.merge.dyebias() (now using
+	maLabels(maGnames)). Also re-created the vignette.
+
 2009-08-28  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
 
 	* improved error/info messages

@@ -74,7 +74,6 @@ dyebias.maplot <- function
   A=maA(data)
   
   plot(x=A[subset,slide],y=M[subset, slide], 
-       subset= subset,
        pch=pch, cex=cex, cex.lab=cex.lab,
        xlab="A", ylab="M",
        xlim=xlim, ylim=ylim
@@ -370,7 +369,7 @@ dyebias.monotonicityplot <- function(data,
                           error.suffix=".merge.dyebias")
   
   ## merge dyebias into it, for selecting the percentiles
-  gnames <- data.frame(reporterId=maInfo(maGnames(data))$reporterId)
+  gnames <- data.frame(reporterId=maLabels(maGnames(data)))
   gnames$dyebias <- NULL # may already be part of it, gives dyebias.{x,y} name after merge
   gnames$A <- NULL
 
