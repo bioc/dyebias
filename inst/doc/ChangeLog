@@ -1,3 +1,8 @@
+2009-12-02  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
+
+	* renamed vignette for clarity Inserted extrablurp at
+	top of vignette to warn of incompleteness (v1.5.6).
+
 2009-12-01  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
 
 	* Adjusted documentation to get rid of some overfull

@@ -32,14 +32,21 @@
 \newcommand{\email}[1]{{\texttt{<#1>}}}
 \newcommand{\URL}[1]{{\texttt{#1}}}
 
+\newcommand{\incompleteVignetteText}[0]{\noindent This vignette is not complete,
+    since calculations, downloads and graph rendering take
+    too long. The complete version is in the documentation directory.}
+
+%% \renewcommand{\incompleteVignetteText}{}  
+%% ^^ leave this comment ^^, it's used by Rnw-png.pl.
+%% This text will be redefined as <emptystring> after preprocessing by Rnw-png.pl
+
 %% \parindent 0in
 
 \usepackage[round]{natbib}
 
 \begin{document}
 
-\title{\bf Correcting dye bias with the GASSCO method  using the \Rcode{dyebias} package}
-
+\title{\bf Correcting gene specific dye bias}
 
 %%% local shorthands:
 \newcommand{\iGSDB}[0]{\textit{iGSDB}}
@@ -60,6 +67,11 @@ Universiteitsweg 100 \\
 The Netherlands
 \end{center}
 
+%% following will be deleted when producing the dyebiasCompleteVignette
+\begin{textit}
+\incompleteVignetteText{}
+\end{textit}
+%% 
 
 \tableofcontents
 
