@@ -1,3 +1,8 @@
+2009-12-07  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
+
+	* added gassco.pdf, high-level description of the method, and
+	application to tumor data. (v1.5.7)
+
 2009-12-02  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
 
 	* renamed vignette for clarity Inserted extrablurp at
