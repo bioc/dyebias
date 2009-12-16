@@ -545,35 +545,33 @@ dyebias.application.subset <- function
   n.slides <- length(targets[[1]])
 
   if (length(reference)==1) {
-    if(verbose) { print("Found common-reference design");} 
+    if(verbose) { print("Found common-reference design") } 
     design <- modelMatrix(targets, ref=reference)
     return(cbind(design, Dye=1))
-  } else {
-    if(verbose) { print("Found set-of-common-references design");} 
-
-    ## see if all refs and non-refs (which have must have ref as a prefix)
-    ## sum up properly:
-    cy.any <- c(targets$Cy3, targets$Cy5)
-    list <- apply(as.array(paste("^",reference, sep="")), 1,
-                  function(r){grep(r,cy.any)})
-    
-
-    if ( do.call("sum", args=lapply(list, length))  != 2*n.slides) {
-      stop("Problem with naming of non-reference samples: must all start with reference name",
-           here, call.= TRUE)
-    }
-
-    ## (other errors are caught by modelMatrix)
-    
-    sub.matrices <- lapply( as.list(reference), 
-                           function(ref){modelMatrix( targets[grep(sprintf("^%s",ref), targets$Cy3),], ref=ref)}) 
-    design <- do.call("blockDiag", args=sub.matrices)
-    design <- cbind(design, "Dye" = rep(1,n.slides))
-    if(sum(design) != n.slides) {
-      stop("Problem with design: expected it to sum up to number of slides", here, call.= TRUE)
-    }
-    return(design[order(rownames(design)), ]) 
   }
+  if(verbose) { print("Found set-of-common-references design") } 
+  
+  ## see if all refs and non-refs (which have must have ref as a prefix)
+  ## sum up properly:
+  cy.any <- c(targets$Cy3, targets$Cy5)
+  list <- apply(as.array(paste("^",reference, sep="")), 1,
+                function(r){grep(r,cy.any)})
+  
+  if ( do.call("sum", args=lapply(list, length))  != 2*n.slides) {
+    stop("Problem with naming of non-reference samples: must all start with reference name",
+         here, call.= TRUE)
+  }
+  
+  ## (other errors are caught by modelMatrix)
+  
+  sub.matrices <- lapply( as.list(reference), 
+                         function(ref){modelMatrix( targets[grep(sprintf("^%s",ref), targets$Cy3),], ref=ref)}) 
+  design <- do.call("blockDiag", args=sub.matrices)
+  design <- cbind(design, "Dye" = rep(1,n.slides))
+  if(sum(design) != n.slides) {
+    stop("Problem with design: expected it to sum up to number of slides", here, call.= TRUE)
+  }
+  return(design[order(rownames(design)), ]) 
 }                                       # .set.design
 
 
