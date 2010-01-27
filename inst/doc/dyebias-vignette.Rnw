@@ -329,11 +329,23 @@ have:
 
 @ 
 
-\noindent In most cases, authors have deposited their data such that the dye swaps have
-been swapped back so the values seem not to have been dye swapped. However,
-we are interested in the dye effect, \emph{not} in the difference of
-FoxA2-enriched over input material. We therefore have to unswap the swapped-back
-dye swaps. 
+\noindent In most cases, authors have deposited their data such that the dye
+swaps have been swapped back so the values seem not to have been dye swapped,
+and so that for in stance the treatment vs. reference behaviour can be
+plotted straight away and compared for several hybridizations regardless of
+dye orientation. 
+
+However, here we are interested only in the dye effect itself, that is in the
+effect of $log_2(Cy5 / Cy3)$, \emph{not} in the difference of FoxA2-enriched
+over input material. We therefore have to unswap the swapped-back dye swaps.
+\footnote{Whether the columns have been deposited the right way around is not
+  always clear from the description. Sometimes it can be inferred from the
+  general behaviour of the data, especially in the case of knock-down data
+  (the knocked-down gene should be down in one hybridization, up in the
+  other) and in ChIP data; when plotted in an MA-plot ($x = 0.5 log_2(ChIP *
+  input), y = log_2(ChIP / input)$) the cloud of points generally has a
+  flattish bottom and a bulging top, since the ChIP-enriched sample
+  generally should go up relative to the input sample.}
 
 <<>>=
 

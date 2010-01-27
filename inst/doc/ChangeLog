@@ -1,3 +1,13 @@
+2010-01-27  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
+
+	* Applied bug fixes sent by Guido Hooiveld: errors in
+	.set.design(), due to having factors (rathern than strings)
+	in the maInfo(maTargets(data)) data.frame. Also a bug in the code
+	checking the design; replaced and extended. Both bugs only affected
+	the fairly uncommon unbalanced set-of-references designs.
+	In addition, clarified the dye (unswapping) in the vignette.
+	(v1.5.8)
+
 2009-12-07  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
 
 	* added gassco.pdf, high-level description of the method, and

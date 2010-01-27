@@ -20,7 +20,7 @@ dyebias.estimate.iGSDBs <- function
     print("Estimating the intrinsic gene-specific dyebiases ...")
   }
 
-  here=", in dyebias.R:dyebias.estimate.iGSDBs"
+  here <- ", in dyebias.R:dyebias.estimate.iGSDBs"
   
   library(methods)
   if (! is(data.norm, "marrayNorm") ) {
@@ -541,7 +541,7 @@ dyebias.application.subset <- function
 
 .set.design <- function (targets, reference, verbose) {
   ## finds design to be used
-  here=", in dyebias.R: set.design"
+  here <- ", in dyebias.R: set.design"
   n.slides <- length(targets[[1]])
 
   if (length(reference)==1) {
@@ -553,7 +553,8 @@ dyebias.application.subset <- function
   
   ## see if all refs and non-refs (which have must have ref as a prefix)
   ## sum up properly:
-  cy.any <- c(targets$Cy3, targets$Cy5)
+  cy.any <- c(as.character(targets$Cy3), as.character(targets$Cy5))
+  ## since they may be factors, see mail by Guido Hooiveld
   list <- apply(as.array(paste("^",reference, sep="")), 1,
                 function(r){grep(r,cy.any)})
   
@@ -565,15 +566,24 @@ dyebias.application.subset <- function
   ## (other errors are caught by modelMatrix)
   
   sub.matrices <- lapply( as.list(reference), 
-                         function(ref){modelMatrix( targets[grep(sprintf("^%s",ref), targets$Cy3),], ref=ref)}) 
+                         function(ref){modelMatrix( targets[grep(sprintf("^%s",ref), as.character(targets$Cy3)),], ref=ref)}) 
   design <- do.call("blockDiag", args=sub.matrices)
-  design <- cbind(design, "Dye" = rep(1,n.slides))
-  if(sum(design) != n.slides) {
-    stop("Problem with design: expected it to sum up to number of slides", here, call.= TRUE)
+
+  if(sum(abs(design)) != n.slides) {
+    stop("Problem with design: sum(absolute(design)) != n.slides", here, call.= TRUE)
   }
+
+  # see if we have at least one dye swap
+  missing.orientations <- unlist(apply(design, 2, function(col){setdiff(c(-1,1),unique(col));}))
+  if (length(missing.orientations) > 0) { 
+    stop("Problem with design: following reference group miss one of the dye orientations:\n",
+         paste(names(missing.orientations)) , "\n")
+  }
+                                 
+  design <- cbind(design, "Dye" = rep(1,n.slides))
+  
   return(design[order(rownames(design)), ]) 
 }                                       # .set.design
-
 
 .check.reporter.labels <- function(data) {
 ## 
