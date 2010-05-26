@@ -987,8 +987,11 @@ the apparent $M$ of each gene.  If the monotonicity assumption is warranted,
 the slopes of each of the regression lines should increase with increasing
 iGSDB. This can be tested using the Mann-Kendall test, which is available
 from the \Rcode{dyebias.monotonicity} function. The
-\Rcode{dyebias.monotonicityplot} function plots, for each gene, the slope of each
-regression line in the data set.
+\Rcode{dyebias.monotonicityplot} function plots, for each gene, the slope of
+each regression line in the data set. This function takes very long to
+compute, and we do in general not recommend its use for each set of
+hybridizations that is being corrected. It is included here, however, to
+further support our model of gene specific dye bias.
 
 %%% NOTE: this plot takes very long to calculate!
 

@@ -390,7 +390,8 @@ dyebias.application.subset <- function
     
     if( (length(estimator.subset) > 1 ) &&
        length(reporter.info[[1]]) != length(estimator.subset)) {
-      stop("expected estimator.subset and reporter.info to be of equal length", here, call. =TRUE)
+      stop(sprintf("length estimator.subset: %d length reporter.info: %d; expected to be  to be of equal length",
+                   length(reporter.info[[1]]), length(estimator.subset)), here, call. =TRUE)
     }
   }
 

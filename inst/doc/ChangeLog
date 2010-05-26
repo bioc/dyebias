@@ -1,3 +1,13 @@
+2010-05-26  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
+
+	* Added dyebias-package.Rd help file (auto-generated from
+	DESCRIPTION). DESCRIPTION.Description more elaborate now. More
+	precise error reporting in .find.estimators (v1.7.1)
+
+2010-02-26  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
+
+	* Small change to vignette.
+
 2010-01-27  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
 
 	* Applied bug fixes sent by Guido Hooiveld: errors in
