@@ -107,7 +107,9 @@ dyebias.estimate.iGSDBs <- function
   fit <- lmFit(data.limma, design)
   { d <- unique(fit$coefficients[,"Dye"])
     if(length(d)==1) {
-      stop("All dyebiases are ", d, ", this can't be right. You probably had a 'Coefficients not estimable'-error", here, call)
+      stop("All dyebiases are ", d,
+           ", this can't be right. You probably had a 'Coefficients not estimable'-error",
+           here, call. =TRUE)
     }
   }
 
