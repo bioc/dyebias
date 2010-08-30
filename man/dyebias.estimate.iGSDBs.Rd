@@ -52,18 +52,20 @@
     clear which ones are better).
   }
 
-  \item{reference}{ If the design is a single common reference,
+  \item{reference}{ If the design contains a single common reference,
     \code{reference} should be this common reference. If the design
-    consists of a set of common reference designs, \code{reference}
+    contains multiple common references, \code{reference}
     should be a vector listing all the common references, and the name
     of the factor value that is not the common reference should have its
     own common reference as a prefix. E.g., if two mutant strains
-    \code{mutA} and \code{mutB} were assayed, each against a different
-    reference \code{ref1} and \code{ref2}, the \code{reference}-argument
+    \code{mutA} and \code{mutB} were assayed, each against a separate
+    common reference \code{ref1} and \code{ref2}, the
+    \code{reference}-argument
     would be \code{c("ref1", "ref2")}, and the \code{Cy3} and \code{Cy5}
-    attributes of \code{maInfo(maTargets(data.norm))} must contain
+    attributes of \code{maInfo(maTargets(data.norm))} would be
     values from \code{"ref1:mutA", "ref2:mutA", "ref1:mutB",
-      "ref2:mutB"}. (The colon is not important; the prefix is).
+      "ref2:mutB"}. The colon is not important, but the prefix is, as
+    allows the association of each sample with its 'own' common reference.
    }
 
   \item{verbose}{
@@ -134,7 +136,7 @@
   unbalanced designs currently supported are a common reference design,
   and a set of common reference designs.
 
-  There are is no weights or subset argument to this function; the 
+  There are no weights or subset argument to this function; the
   estimation is done for all reporters found. If there are replicate
   spots, they are averaged prior to the estimation (the reason being
   that we are not interested in p-values for the estimate)
@@ -142,7 +144,8 @@
   Having obtained the iGSDB estimates, the corrections can be applied
   to either to the hybridizations given by the \code{data.norm} argument,
   or to a different set of slides that is thought to have very similar
-  iGSDBs. Applying the corrections is done with \cr \code{\link{dyebias.apply.correction}}. 
+  iGSDBs. Applying the corrections is done with \cr
+  \code{\link{dyebias.apply.correction}}.
 }
 
 \seealso{dyebias.apply.correction}
