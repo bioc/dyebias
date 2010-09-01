@@ -131,8 +131,6 @@ dyebias.estimate.iGSDBs <- function
                       p.value=results$p.value.Dye,
                       stringsAsFactors=FALSE)
 
-  # restore previous one
-
   return(final)
 }                                       # dyebias.estimate.iGSDBs
 
@@ -210,16 +208,15 @@ dyebias.apply.correction <-  function
   Rcor <- matrix(0, n.spots, n.slides)
   Gcor <- matrix(0, n.spots, n.slides)
 
-  summary <- data.frame(slide="", file="",
-                        green.correction="",
-                        red.correction="",
-                        avg.correction="",
-                        var.ratio="", reduction.perc="", p.value="",
+  summary <- data.frame(slide=rep(0, n.slides), #length also applies to other columns
+                        file=as.character(NA),
+                        green.correction=as.numeric(NA),
+                        red.correction=as.numeric(NA),
+                        avg.correction=as.numeric(NA),
+                        var.ratio=as.numeric(NA),
+                        reduction.perc=as.numeric(NA),
+                        p.value=as.numeric(NA),
                         stringsAsFactors=FALSE)
-  summary.names  <- names(summary) 
-  numeric.names <- summary.names[-(1:2)]
-
-  summary  <- summary[ summary$slide != "",] #empty it
 
   for (i in 1:n.slides) {
     file <- maLabels(maTargets(data.norm))[i]
@@ -266,15 +263,14 @@ dyebias.apply.correction <-  function
                     var.ratio.included, reduction.perc, p.value))
     }
 
-    summary <- rbind(summary,
-                     c(as.character(i),
-                       as.character(file),
-                       as.character(slide.correction.green),
-                       as.character(slide.correction.red),
-                       as.character(slide.correction.avg),
-                       as.character(var.ratio.included),
-                       as.character(reduction.perc),
-                       as.character(p.value)))
+    summary[i,] <- list(i, 
+                        file,
+                        slide.correction.green,
+                        slide.correction.red,
+                        slide.correction.avg,
+                        var.ratio.included,
+                        reduction.perc,
+                        p.value)
     
     Rcor[,i] <- 2^(maA(data.norm[,i]) + 0.5*Mcor[,i])
     Gcor[,i] <- 2^(maA(data.norm[,i]) - 0.5*Mcor[,i])
@@ -284,11 +280,6 @@ dyebias.apply.correction <-  function
     }
   } ## i in 1:nslides
 
-  names(summary) <- summary.names
-  for (header in numeric.names) {
-    summary[,header] <- as.numeric(summary[,header])
-  }
-  
   data.dyecorr <- data.norm             #start with existing object, then modify it
 
   maM(data.dyecorr) <- Mcor
@@ -307,7 +298,7 @@ dyebias.apply.correction <-  function
 
   if(verbose) {
     print("Done dyebias-correcting the slides. Summary of the variance-reduction percentages:\n")
-    print(summary(as.numeric(summary$reduction.perc)))
+    print(summary(summary$reduction.perc))
   }
 
   return(list(data.corrected=data.dyecorr, 

@@ -1,3 +1,8 @@
+2010-09-01  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
+
+	* dyebias.R (dyebias.apply.correction): more robust handling of
+	summary information. (v.1.7.5)
+
 2010-08-30  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
 
 	* dyebias.R (dyebias.estimate.iGSDBs): bug in error message (v1.7.4)
