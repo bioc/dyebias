@@ -1,3 +1,10 @@
+2010-09-02  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
+
+	* dyebias.R (dyebias.estimate.iGSDBs): In unbalanced design,
+	reference cannot be NULL or ''. Also editorial changes in man
+	pages and vignette, which has been recompiled (v.1.7.6). 
+	
+
 2010-09-01  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
 
 	* dyebias.R (dyebias.apply.correction): more robust handling of

@@ -795,7 +795,7 @@ it has to know what the references are in each case; hence the
 \Rcode{references <- c("wt", "td")} assignment. It also has be able to figure
 out which ``experimental'' (i.e., non-reference) sample goes with which
 reference. Therefore, they all have to start with the name of their
-respective reference sample (see the documentation). Having said, we will
+respective reference sample (see the documentation). Having said that, we will
 ignore the \Rcode{references} argument for now, and estimate the iGSDBs using
 averaging, simply as:
 
@@ -1016,7 +1016,7 @@ further support our model of gene specific dye bias.
 
 Before dye bias correction with GASSCO, the data shows a clear trend of
 increasing apparent $M$, due to dye bias. After correction, this trend has
-disappeared, supporting our assumption of monotonicity in this case.
+been strongly reduced, supporting our assumption of monotonicity in this case.
 
 %% ========================================================================
 
