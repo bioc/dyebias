@@ -31,7 +31,7 @@
 
   \item{is.balanced}{
     Logical indicating whether the data set represents a balanced design
-    (which is in fact the most common case). A design is balanced if all
+    (which is by far the most common case). A design is balanced if all
     factor values are present an equal number of times in both the
     forward and reverse dye orientations. A self-self design is by
     definition balanced (even if the number of slides is uneven). If
@@ -53,7 +53,8 @@
   }
 
   \item{reference}{ If the design contains a single common reference,
-    \code{reference} should be this common reference. If the design
+    the \code{reference} argument should be this common reference (which may not be
+    empty). If the design
     contains multiple common references, \code{reference}
     should be a vector listing all the common references, and the name
     of the factor value that is not the common reference should have its
@@ -64,7 +65,7 @@
     would be \code{c("ref1", "ref2")}, and the \code{Cy3} and \code{Cy5}
     attributes of \code{maInfo(maTargets(data.norm))} would be
     values from \code{"ref1:mutA", "ref2:mutA", "ref1:mutB",
-      "ref2:mutB"}. The colon is not important, but the prefix is, as
+      "ref2:mutB"}. The colon is not important, but the prefix is, as it
     allows the association of each sample with its 'own' common reference.
    }
 
