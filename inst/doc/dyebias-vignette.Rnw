@@ -18,6 +18,10 @@
 %%% on them. The file dyebiasVignette-png.pdf in the distribution has been
 %%% produced with the Jombart driver.
 
+\SweaveOpts{keep.source=TRUE}
+\SweaveOpts{width=60}
+\SweaveOpts{continue='  '}
+
 \documentclass[11pt]{article}
 
 \usepackage{amsmath,epsfig,fullpage,hyperref}%psfig,pstricks,
@@ -767,10 +771,10 @@ the contents of the \Rcode{Cy3}- and \Rcode{Cy5}-columns are wrong:
 
 \subsection{Estimating the \iGSDB{} }
 
-It happens not to matter in the current case, because the design is balanced,
-and therefore, the dyebias is simply the average.  However, we'll correct it
-nonetheless as it is instructive. A bit of sleuthing shows that what is
-actually needed is the following:
+The current design is balanced, so the dyebias is simply the average of the
+raw $M$. However, to show how the ``set of pairwise designs'' estimation
+works, we will show what is needed (but not use it). A bit of sleuthing shows
+that what is actually needed is the following:
 
 <<eval=FALSE>>=
 
@@ -779,15 +783,19 @@ actually needed is the following:
   info$Cy3 <- c("wt",    "wt IP",  "td",    "td IP" )
   info$Cy5 <- c("wt IP", "wt",     "td IP", "td")
 
-  references <- c("wt", "td")
-
   maInfo(maTargets(data.norm.est)) <- info
 
-  maInfo(maTargets(data.norm.est))
+  references <- c("wt", "td")
+
+   ### The estimation would then be run as:
+   ###
+   ###   iGSDBs.estimated <- dyebias.estimate.iGSDBs(data.norm.est, is.balanced=FALSE, 
+   ###                                             reference=references, verbose=TRUE)
+
 @ 
 
 \noindent That is, we have one dye-swapped pair of IP vs. input material for
-the wild type, and a similar pair for the temperature-sensitive degron
+the wild type, and one dye-swapped pair for the temperature-sensitive degron
 mutant.  In other words, we have a set of pairwise designs. If
 \Rcode{dyebias.estimate.iGSDBs} were to use LIMMA (which is necessary for
 unbalanced designs, but not necessary and not used in the current case), then
@@ -795,13 +803,13 @@ it has to know what the references are in each case; hence the
 \Rcode{references <- c("wt", "td")} assignment. It also has be able to figure
 out which ``experimental'' (i.e., non-reference) sample goes with which
 reference. Therefore, they all have to start with the name of their
-respective reference sample (see the documentation). Having said that, we will
-ignore the \Rcode{references} argument for now, and estimate the iGSDBs using
-averaging, simply as:
+respective reference sample (see the documentation).  Having said that, we
+will ignore the \Rcode{references} argument for now, and estimate the iGSDBs
+using averaging, simply as:
 
 <<eval=FALSE>>=
 
-  iGSDBs.estimated <- dyebias.estimate.iGSDBs(data.norm.est, verbose=TRUE)
+  iGSDBs.estimated <- dyebias.estimate.iGSDBs(data.norm.est, is.balanced=TRUE, verbose=TRUE)
   summary(iGSDBs.estimated)
 
 @ 
