@@ -73,7 +73,7 @@ dyebias.estimate.iGSDBs <- function
   }
 
   if (is.balanced) {                    #we can just take average; much faster
-    ### note that the reference argument is not used
+    ### (in this case, reference argument is not used)
     if (verbose) { print("Balanced design, simply averaging") }
     return(data.frame(reporterId=unique.ids,
                       dyebias=apply(Mavg, 1, averaging.function, na.rm=TRUE),
@@ -82,6 +82,9 @@ dyebias.estimate.iGSDBs <- function
                       stringsAsFactors=FALSE
                       ))
   }
+
+  if(is.null(reference) || reference=="")
+    stop("In unbalanced design, reference cannot be NULL or ''", here, call.=TRUE)
 
   ### else: do full limma model
   library(limma)
