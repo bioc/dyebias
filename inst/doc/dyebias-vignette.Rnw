@@ -15,12 +15,10 @@
 %%% files (see http://biomserv.univ-lyon1.fr/~jombart/rstuff.html). The
 %%% alternative <<fig>> chunks are in comments, and work much
 %%% better. However, the standard R utilities (INSTALL, check, build) choke
-%%% on them. The file dyebiasVignette-png.pdf in the distribution has been
+%%% on them. The file dyebiasCompleteVignette.pdf in the distribution has been
 %%% produced with the Jombart driver.
 
 \SweaveOpts{keep.source=TRUE}
-\SweaveOpts{width=60}
-\SweaveOpts{continue='  '}
 
 \documentclass[11pt]{article}
 
@@ -36,11 +34,19 @@
 \newcommand{\email}[1]{{\texttt{<#1>}}}
 \newcommand{\URL}[1]{{\texttt{#1}}}
 
-\newcommand{\incompleteVignetteText}[0]{\noindent This vignette is not complete,
-    since calculations, downloads and graph rendering take
-    too long. The complete version is in the documentation directory.}
+\newcommand{\incompleteVignetteText}[0]{\noindent This vignette is not
+  complete, since it takes too long to compute, download, or render (owing to
+  the lack of bitmaps). Whereever this is the case, the text ``Figure omitted'' 
+  is shown. The complete version, dyebiasCompleteVignette.pdf,
+  can be found the documentation directory.}
+
+\newcommand{\incompleteVignetteOmission}[0]{\noindent (Text or figure omitted.) }
 
 %% \renewcommand{\incompleteVignetteText}{}  
+%% ^^ leave this comment ^^, it's used by Rnw-png.pl.
+%% This text will be redefined as <emptystring> after preprocessing by Rnw-png.pl
+
+%% \renewcommand{\incompleteVignetteOmission}{}  
 %% ^^ leave this comment ^^, it's used by Rnw-png.pl.
 %% This text will be redefined as <emptystring> after preprocessing by Rnw-png.pl
 
@@ -190,6 +196,10 @@ The data is deposited in Array Express \citep{arrayexpress07} under accession
 \Rpackage{dyebiasexamples} package. We need the \Rpackage{marray} package
 \citep{marray} for the data model, \Rpackage{convert} for converting, and of
 course \Rpackage{dyebias} and \Rpackage{dyebiasexamples}:
+
+<<echo=false>>=
+options(continue='   ')
+@ 
 
 <<>>=
   library(marray)
@@ -900,7 +910,7 @@ bias:
 %%% genes are simply too big for acrobat reader.  
 
 %% <<eval=FALSE, fig=TRUE, png=TRUE, eps=FALSE, pdf=FALSE, height=3, width=6, size=1>>=
-<<eval=FALSE, fig=TRUE>>=
+<<eval=FALSE, fig=FALSE>>=
   layout(matrix(1:2, nrow=1,ncol=2))
 
   dyebias.maplot(data=data.norm.all,
@@ -923,7 +933,7 @@ bias:
                  cex.main=0.8,
                  output=NULL)
 @ 
-
+\incompleteVignetteOmission{}
 
 \noindent The difference between the uncorrected and corrected data is quite
 big. The strongly red-biased spots had an average two-fold change, which,
@@ -948,8 +958,10 @@ behaviour is linear. The function \Rcode{dyebias.trendplot} therefore bins
 all probes by their intrinsic bias, and plots the median of each bin for each
 slide:
 
+%%%%%%%% THIS SHOULD WORK @@@@@@@@@@@@@@@@@
+
 %% <<eval=FALSE, fig=TRUE, png=FALSE, height=3, width=6, size=1>>=
-<<eval=FALSE, fig=TRUE>>=
+<<eval=FALSE, fig=FALSE>>=
 
   layout(matrix(1:2, nrow=1,ncol=2))
 
@@ -972,6 +984,7 @@ slide:
     main="corrected")
 
 @ 
+\incompleteVignetteOmission{}
 
 \noindent The method does a good job, although usually the results are even
 better, with all lines hovering around $M=0$ after the correction.  We
@@ -1002,7 +1015,7 @@ further support our model of gene specific dye bias.
 %%% NOTE: this plot takes very long to calculate!
 
 %% <<eval=FALSE, fig=TRUE, png=TRUE, height=3, width=6, size=1>>=
-<<eval=FALSE, fig=TRUE>>=
+<<eval=FALSE, fig=FALSE>>=
 
   layout(matrix(1:2, nrow=1,ncol=2))
 
@@ -1021,6 +1034,8 @@ further support our model of gene specific dye bias.
     main="corrected")
 
 @ 
+
+\incompleteVignetteOmission{}
 
 Before dye bias correction with GASSCO, the data shows a clear trend of
 increasing apparent $M$, due to dye bias. After correction, this trend has
