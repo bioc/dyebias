@@ -1,3 +1,7 @@
+2010-10-04  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
+
+	* dyebias-vignette.Rnw: editorial changes in vignette (v. 1.7.7)
+
 2010-09-02  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
 
 	* dyebias.R (dyebias.estimate.iGSDBs): In unbalanced design,

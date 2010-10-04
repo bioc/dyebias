@@ -34,17 +34,16 @@
 \newcommand{\email}[1]{{\texttt{<#1>}}}
 \newcommand{\URL}[1]{{\texttt{#1}}}
 
-\newcommand{\incompleteVignetteText}[0]{\noindent This vignette is not
+\newcommand{\incompleteVignetteText}[0]{\noindent \small \textit{This vignette is not
   complete, since it takes too long to compute, download, or render (owing to
-  the lack of bitmaps). Whereever this is the case, the text ``Figure omitted'' 
-  is shown. The complete version, dyebiasCompleteVignette.pdf,
-  can be found the documentation directory.}
-
-\newcommand{\incompleteVignetteOmission}[0]{\noindent (Text or figure omitted.) }
+  the lack of bitmaps). The text ``Figure omitted'' is shown in such cases.
+  The complete version, dyebiasCompleteVignette.pdf, can be found in the
+  documentation folder.}}
 
 %% \renewcommand{\incompleteVignetteText}{}  
 %% ^^ leave this comment ^^, it's used by Rnw-png.pl.
 %% This text will be redefined as <emptystring> after preprocessing by Rnw-png.pl
+\newcommand{\incompleteVignetteOmission}[0]{\begin{center}\fbox{\rule{0pt}{2ex}\textit{Figure omitted}}\vspace{2ex}\end{center}}
 
 %% \renewcommand{\incompleteVignetteOmission}{}  
 %% ^^ leave this comment ^^, it's used by Rnw-png.pl.
@@ -69,8 +68,7 @@
 \begin{center}
 1. \email{p.lijnzaad@umcutrecht.nl}\\
 2. \email{a.margaritis@umcutrecht.nl}\\
-Holstege Laboratory\\
-Dept. of Physiological Chemistry \\
+Dept. of Molecular Cancer Research\\
 University Medical Center (UMC) \\
 Universiteitsweg 100 \\
 3584 CG Utrecht \\
@@ -78,9 +76,7 @@ The Netherlands
 \end{center}
 
 %% following will be deleted when producing the dyebiasCompleteVignette
-\begin{textit}
 \incompleteVignetteText{}
-\end{textit}
 %% 
 
 \tableofcontents
@@ -94,11 +90,12 @@ package to correct for gene-specific dye bias of two-colour microarray data
 using the GASSCO method by \citet{lijnzaad09}. 
 
 A well-known artefact of two-colour microarrays is the intensity-dependent
-dye bias, which is usually adequately addressed by using LOESS normalization. However,
-gene-specific dye bias is different, and persists after LOESS
-normalization. It is also not sufficient to use dye swaps, as this firstly wastes
-statistical power, but more importantly, may leave residual bias since
-dye-swaps need not have the same degree of dye bias. 
+dye bias, which is usually adequately addressed by using LOESS normalization.
+However, gene-specific dye bias is different, and persists after LOESS
+normalization. Using dye swaps helps, but is not sufficient, as the bias
+firstly wastes statistical power, but more importantly, may leave residual
+bias since dye-swaps need not have the same degree of dye bias in both
+hybridizations of the dye swapped pair.
 
 Gene-specific dye bias is ubiquitous, and often quite large. The GASSCO
 method implemented in the \Rcode{dyebias} package efficiently solves the
@@ -146,7 +143,9 @@ feedback.
 \section{Installing}
 
 If you are reading this document and have not yet installed any
-software on your computer, visit \url{http://bioconductor.org} and
+software on your computer, visit \\
+%%% newline to avoid overful hbox
+\url{http://bioconductor.org} and
 follow the instructions for installing \Rcode{R} and Bioconductor.  Once
 you have installed both \Rcode{R} and Bioconductor, install the
 \Rpackage{dyebias} package with
@@ -163,15 +162,13 @@ and click on \Rcode{Install package(s) from Bioconductor...}, and select
 command \texttt{R CMD INSTALL} or set the option \texttt{CRAN} to your
 nearest mirror site and use the command \texttt{install.packages} from within
 an R session. The latest version of the \Rpackage{dyebias} package can always
-be found at \url{http://www.holstegelab.nl/publications/margaritis_lijnzaad}.
+be found at \\
+%%% newline to avoid overful hbox
+\url{http://www.holstegelab.nl/publications/margaritis_lijnzaad}.
 
 Note: if you run \Rcode{R CMD check} on this package, it will complain with
 \Rcode{dyebias.apply.correction: no visible global function definition for
   'maR<-'} (nor for \Rcode{'maG<-'}). You can safely ignore this message.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Introduction}
 
 For simple examples of how the \Rpackage{dyebias} package can be used to
 correct dyebias, just run the \Rcode{example()}s for any of the functions in
@@ -578,7 +575,7 @@ the slides by increasing slide bias (of the uncorrected data), hence the
 
   layout(matrix(1:2, nrow=1,ncol=2))
 
-  order=dyebias.boxplot(data=data.norm, 
+  order <- dyebias.boxplot(data=data.norm, 
     iGSDBs=iGSDBs.estimated,
     order=NULL,
     ylim=c(-1,1),
@@ -590,7 +587,7 @@ the slides by increasing slide bias (of the uncorrected data), hence the
     output=NULL
     )
 
-  order=dyebias.boxplot(data=correction$data.corrected, 
+  order <- dyebias.boxplot(data=correction$data.corrected, 
     iGSDBs=iGSDBs.estimated,
     order=order,
     ylim=c(-1,1),
@@ -712,8 +709,9 @@ used for the \Rcode{gene.selector}-function.
 
 Since the normalized data does not contain \Rcode{A}-values, we calculate
 (approximate) them from the raw data. The columns etc. are as indicated. You
-generally have to be careful with this; use
-e.g. \Rcode{Columns((GSMList(gse))[[1]])} to see what they are, and also plot
+generally have to be careful with this; use e.g. \\
+%%% (newline to avoid overful hbox)
+\Rcode{Columns((GSMList(gse))[[1]])} to see what they are, and also plot
 them to be sure about the dye orientation.
 
 <<eval=FALSE>>=
@@ -863,7 +861,7 @@ first, and also make sure \Rcode{A} is set and the dye swaps are swapped back:
 
   maA(data.norm.all) <- log2(  maRf(data.raw.all) * maGf(data.raw.all) ) / 2
 
-  swap=c(1,2,3,5, 7,8,9) 
+  swap <- c(1,2,3,5, 7,8,9) 
   maM(data.norm.all)[, swap] <-  - maM(data.norm.all)[, swap]
 
 @
@@ -933,6 +931,7 @@ bias:
                  cex.main=0.8,
                  output=NULL)
 @ 
+
 \incompleteVignetteOmission{}
 
 \noindent The difference between the uncorrected and corrected data is quite
@@ -958,14 +957,15 @@ behaviour is linear. The function \Rcode{dyebias.trendplot} therefore bins
 all probes by their intrinsic bias, and plots the median of each bin for each
 slide:
 
-%%%%%%%% THIS SHOULD WORK @@@@@@@@@@@@@@@@@
 
+%%% We can't print the trendplot in the cut-down version, since the data for it
+%%% is calculated in a a eval=FALSE block ...
 %% <<eval=FALSE, fig=TRUE, png=FALSE, height=3, width=6, size=1>>=
-<<eval=FALSE, fig=FALSE>>=
+<<eval=FALSE, fig=FALSE, height=3, width=6>>=
 
   layout(matrix(1:2, nrow=1,ncol=2))
 
-  order=dyebias.trendplot(data=data.norm.all, 
+  order <- dyebias.trendplot(data=data.norm.all, 
     iGSDBs=iGSDBs.estimated,
     application.subset=application.subset,
     order=NULL,
@@ -974,7 +974,7 @@ slide:
     output=NULL,
     main="uncorrected")
 
-  order=dyebias.trendplot(data=correction$data.corrected, 
+  order <- dyebias.trendplot(data=correction$data.corrected, 
     iGSDBs=iGSDBs.estimated,
     application.subset=application.subset, 
     order=order,
@@ -984,6 +984,7 @@ slide:
     main="corrected")
 
 @ 
+
 \incompleteVignetteOmission{}
 
 \noindent The method does a good job, although usually the results are even
@@ -999,18 +1000,14 @@ bias is a monotonic function of the slide bias and the intrinsic
 gene-specific dye bias. Our proposal to simply use the product of both
 appears to be a good first approximation.
 
+If the monotonicity assumption is warranted, the slopes of each of the
+regression lines should increase with increasing iGSDB. This can be tested
+using the Mann-Kendall test, which is available from the
+\Rcode{dyebias.monotonicity} function.  It plots, for each gene, the slope of
+each regression line in the data set.  The function is included to further
+support our model of gene specific dye bias, but since the function takes
+very long to compute, we strongly discourage its use by end users.
 
-This can also be seen using the \Rcode{dyebias.monotonicityplot}. It orders
-all slides by their slide bias, then calculates linear regression lines for
-the apparent $M$ of each gene.  If the monotonicity assumption is warranted,
-the slopes of each of the regression lines should increase with increasing
-iGSDB. This can be tested using the Mann-Kendall test, which is available
-from the \Rcode{dyebias.monotonicity} function. The
-\Rcode{dyebias.monotonicityplot} function plots, for each gene, the slope of
-each regression line in the data set. This function takes very long to
-compute, and we do in general not recommend its use for each set of
-hybridizations that is being corrected. It is included here, however, to
-further support our model of gene specific dye bias.
 
 %%% NOTE: this plot takes very long to calculate!
 
@@ -1019,14 +1016,14 @@ further support our model of gene specific dye bias.
 
   layout(matrix(1:2, nrow=1,ncol=2))
 
-  order=dyebias.monotonicityplot(data=data.norm.all, 
+  order <- dyebias.monotonicityplot(data=data.norm.all, 
     iGSDBs=iGSDBs.estimated,
     order=NULL,
     ylim=c(-0.5,0.5),
     output=NULL,
     main="uncorrected")
 
-  order=dyebias.monotonicityplot(data=correction$data.corrected, 
+  order <- dyebias.monotonicityplot(data=correction$data.corrected, 
     iGSDBs=iGSDBs.estimated,
     order=order,
     ylim=c(-0.5,0.5),
@@ -1037,9 +1034,10 @@ further support our model of gene specific dye bias.
 
 \incompleteVignetteOmission{}
 
-Before dye bias correction with GASSCO, the data shows a clear trend of
-increasing apparent $M$, due to dye bias. After correction, this trend has
-been strongly reduced, supporting our assumption of monotonicity in this case.
+\noindent Before dye bias correction with GASSCO, the data shows a clear trend
+of increasing apparent $M$, due to dye bias. After correction, this trend has
+been strongly reduced, supporting our assumption of monotonicity in this
+case.
 
 %% ========================================================================
 
@@ -1082,5 +1080,3 @@ Lastly, we appreciate all feedback.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
-
-
