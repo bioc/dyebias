@@ -2,7 +2,7 @@
 \alias{dyebias.monotonicityplot}
 
 \title{
-  Show the degree of monotonicity of the dye bias across the slides.
+  Show the degree of monotonicity of the dye bias across the slides. DEPRACATED
 }
 \description{
 
@@ -11,6 +11,9 @@
   also dyebias.trendplot). This function plots the regression slope of
   each gene, ordered by iGSDB and slide bias.  If the uncorrected total
   dye bias is indeed monotonous, an increasing trend should be visible.
+
+  This function has been depracated, as it is of limited use and takes
+  too long to compute.
 
 }
 
@@ -118,7 +121,7 @@
 
 \examples{
 
-  \dontshow{
+  \dontrun{
      options(stringsAsFactors = FALSE)
 
      library(dyebias)
