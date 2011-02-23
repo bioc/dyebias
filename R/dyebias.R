@@ -83,6 +83,8 @@ dyebias.estimate.iGSDBs <- function
                       ))
   }
 
+  warning("Your design is unbalanced; make sure that this is really what you want!\n")
+
   if(is.null(reference) || reference=="")
     stop("In unbalanced design, reference cannot be NULL or ''", here, call.=TRUE)
 
