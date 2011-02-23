@@ -38,7 +38,7 @@
   complete, since it takes too long to compute, download, or render (owing to
   the lack of bitmaps). The text ``Figure omitted'' is shown in such cases.
   The complete version, dyebiasCompleteVignette.pdf, can be found in the
-  documentation folder.}}
+  documentation folder of your installation.}}
 
 %% \renewcommand{\incompleteVignetteText}{}  
 %% ^^ leave this comment ^^, it's used by Rnw-png.pl.
@@ -136,10 +136,19 @@ The steps to perform dye bias correction are, then,
 \noindent The \Rpackage{dyebias} package provides functions to do both, and
 also has some plotting routines to judge the correction. The package has been
 tested on a wide variety of public data (see \citet{lijnzaad09}), and has
-been in active production in our own lab since over a year. We appreciate all
-feedback.
+been in active production in our own lab since over a year. 
+
+For simple examples of how the \Rpackage{dyebias} package can be used to
+correct dyebias, just run the \Rcode{example()}s for any of the functions in
+the package. In particular, try \Rcode{example(dyebias.rgplot)},
+\Rcode{example(dyebias.boxplot)} and \Rcode{example(dyebias.trendplot)}.
+They make use of our own validation data, which is provided by the
+\Rpackage{dyebiasexamples} package, and which can be installed through
+Bioconductor similarly. The current document presents two more
+case studies.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Installing}
 
 If you are reading this document and have not yet installed any
@@ -170,14 +179,6 @@ Note: if you run \Rcode{R CMD check} on this package, it will complain with
 \Rcode{dyebias.apply.correction: no visible global function definition for
   'maR<-'} (nor for \Rcode{'maG<-'}). You can safely ignore this message.
 
-For simple examples of how the \Rpackage{dyebias} package can be used to
-correct dyebias, just run the \Rcode{example()}s for any of the functions in
-the package. In particular, try \Rcode{example(dyebias.rgplot)},
-\Rcode{example(dyebias.boxplot)} and \Rcode{example(dyebias.trendplot)}.
-They make use of our own validation data, which is provided by the
-\Rpackage{dyebiasexamples} package, which can be installed through
-Bioconductor similarly. The current document presents two more
-case studies.
 
 \section{Tuteja et al. (2008)}
 
@@ -185,6 +186,13 @@ The first example uses data from \citet{tuteja08}, a genome-wide location
 analysis of the transcription factor Foxa2, which is important in liver
 development.  The ChIP on chip data comes from five self-spotted mouse cDNA
 slides.
+
+The data consist of 5 slides, which means that there is not an equal number
+of slides in both dye orientations. We call this an \textit{unbalanced
+  design}.  An unbalanced design is actually very uncommon; most designs
+should be, and are, balanced. We chose this example to illustrate the use of
+an unbalanced design\footnote{In the future, we may remove this functionality,
+and replace this example.}.
 
 \subsection{Reading the data}
 
@@ -229,11 +237,11 @@ convert to a proper \Rcode{marrayInfo} object:
 
 @ 
 
-\noindent It shows that we have five hybridizations, all of them FoxA2-enriched versus
-input material. Three of them have the dyes in the ``forward'' direction, two
-in the ``reverse'' direction. In other words, the design is not balanced;
-more on this below. First prepare the layout information (this was gleaned
-from the original submission):
+\noindent It shows that we have five hybridizations, all of them
+FoxA2-enriched versus input material. Three of them have the dyes in the
+``forward'' direction, two in the ``reverse'' direction, detailing the
+unbalancedness mentioned before.  First prepare the layout information (this
+was gleaned from the original submission):
 
 <<>>=
 
@@ -352,7 +360,7 @@ dye swaps.  \footnote{Whether the columns have been deposited the right way
   inferred from the general behaviour of the data. E.g., in the case of
   knock-down data, the knocked-down gene should be down in one hybridization,
   up in the other; in ChIP data, the ChIP-enriched sample generally should go
-  up relative to the input sample and is therefore be visible, in an MA-plot, as a
+  up relative to the input sample and is therefore visible, in an MA-plot, as a
   cloud of points with a flattish bottom and a bulging top.
 }
 
@@ -385,8 +393,8 @@ continue to work.
 We now have a full-fledged \Rcode{marrayNorm} object that we can use to
 estimate the iGSDBs from. 
 
-The design is unbalanced, which is actually uncommon; most designs are (or
-should be) balanced. If the design is unbalanced, the
+As mentioned before, the design is unbalanced. If your design is like this,
+be sure you really want it to be unbalanced. For unbalanced designs, the
 \Rcode{dyebias.estimate.iGSDBs} function uses \Rpackage{limma} \citep{limma}
 to obtain estimates for the intrinsic gene specific dye biases. In the
 current data set, the \Rcode{reference} is the sample called \Rcode{input}
@@ -403,11 +411,12 @@ current data set, the \Rcode{reference} is the sample called \Rcode{input}
 
 @
 
-\noindent This took a little while, mostly be because a full Limma model has to be run
-for this unbalanced design. (We ignore its $p$-values, since we have no
-use for them). If the design is balanced, the estimate is done by simply
-averaging. This gives identical results (and no $p$-values), but is much
-faster.
+\noindent This took a little while, mostly be because a full Limma model has
+to be run for this unbalanced design\footnote{Passing
+  \texttt{is.balanced=FALSE} to the \texttt{dyebias.estimate.iGSDBs}-function
+  will be made invalid in the future.}. If the design is balanced, the
+estimate is done by simply averaging. This gives identical results (and no
+$p$-values, but they are not needed anyway), but is much faster.
 
 Let's have a quick look at the distribution of the iGSDBs:
 
@@ -994,50 +1003,7 @@ mentioned before. This affects the iGSDB estimates, which in turn impacts the
 correction of the rest of the data. The overall variance, however, is clearly
 reduced.
 
-From the left panel it is also clear that the total dye bias shows a
-consistent trend in each of the bins. This can only happen if the total dye
-bias is a monotonic function of the slide bias and the intrinsic
-gene-specific dye bias. Our proposal to simply use the product of both
-appears to be a good first approximation.
-
-If the monotonicity assumption is warranted, the slopes of each of the
-regression lines should increase with increasing iGSDB. This can be tested
-using the Mann-Kendall test, which is available from the
-\Rcode{dyebias.monotonicity} function.  It plots, for each gene, the slope of
-each regression line in the data set.  The function is included to further
-support our model of gene specific dye bias, but since the function takes
-very long to compute, we strongly discourage its use by end users.
-
-
-%%% NOTE: this plot takes very long to calculate!
-
-%% <<eval=FALSE, fig=TRUE, png=TRUE, height=3, width=6, size=1>>=
-<<eval=FALSE, fig=FALSE>>=
-
-  layout(matrix(1:2, nrow=1,ncol=2))
-
-  order <- dyebias.monotonicityplot(data=data.norm.all, 
-    iGSDBs=iGSDBs.estimated,
-    order=NULL,
-    ylim=c(-0.5,0.5),
-    output=NULL,
-    main="uncorrected")
-
-  order <- dyebias.monotonicityplot(data=correction$data.corrected, 
-    iGSDBs=iGSDBs.estimated,
-    order=order,
-    ylim=c(-0.5,0.5),
-    output=NULL,
-    main="corrected")
-
-@ 
-
-\incompleteVignetteOmission{}
-
-\noindent Before dye bias correction with GASSCO, the data shows a clear trend
-of increasing apparent $M$, due to dye bias. After correction, this trend has
-been strongly reduced, supporting our assumption of monotonicity in this
-case.
+%%% The section on monotonicity has been removed as of revision 51723
 
 %% ========================================================================
 
