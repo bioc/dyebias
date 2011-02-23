@@ -266,7 +266,7 @@ dyebias.monotonicity <- function(data,
                                  iGSDBs,
                                  dyebias.percentile=5,
                                  order=NULL) { 
-
+  warning("dyebias.monotonicity: this function has been depracated\n")
   slopes <- .monotonicity(data,iGSDBs, dyebias.percentile, order)
 
 
@@ -289,6 +289,8 @@ dyebias.monotonicityplot <- function(data,
                                      sub=NULL,
                                      ...
                                      ) { 
+
+  warning("dyebias.monotonicityplot: this function has been depracated\n")
 
   file.device <- .set.output(output)
 
@@ -433,6 +435,8 @@ dyebias.monotonicityplot <- function(data,
                           iGSDBs,
                           dyebias.percentile=5,
                           order=NULL) { 
+  warning(".monotonicity: this function has been depracated\n")
+
   ## alternatives would be Page's trend test or Jonckheere-Terpstra test
 
   ## only meaning full for uncorrected data, really
