@@ -30,6 +30,10 @@
     should indicate the factor value for the respective channel.}
 
   \item{is.balanced}{
+    The use of this argument is discouraged, since designs should generally be
+    balanced. The values other than \code{TRUE} will become illegal in
+    the future.
+
     Logical indicating whether the data set represents a balanced design
     (which is by far the most common case). A design is balanced if all
     factor values are present an equal number of times in both the
@@ -70,7 +74,7 @@
    }
 
   \item{verbose}{
-    Logical, indicating wether or not to be verbose
+    Logical, indicating wether or not to be verbose.
   }
 }
 
