@@ -1,3 +1,10 @@
+2011-02-23  Philip Lijnzaad  <philip@philip-laptop>
+
+	* preparations for dropping support for unbalanced designs and for
+	the monotonicity stuff: adjustments in the vignette and function
+	documentation; warnings during execution.  Still fully
+	compatible. (v1.9.1)
+
 2010-10-04  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
 
 	* dyebias-vignette.Rnw: editorial changes in vignette; rebuilt the
