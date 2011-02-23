@@ -1,5 +1,8 @@
 2011-02-23  Philip Lijnzaad  <philip@philip-laptop>
 
+	* as below, but now we have an atomic top-level commit we can rely on; no
+	other changes (v1.9.2)
+
 	* preparations for dropping support for unbalanced designs and for
 	the monotonicity stuff: adjustments in the vignette and function
 	documentation; warnings during execution.  Still fully
