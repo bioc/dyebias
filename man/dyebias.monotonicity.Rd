@@ -2,7 +2,8 @@
 \alias{dyebias.monotonicity}
 
 \title{
-  Calculate the degree of monotonicity of the dye bias across the slides.
+  Calculate the degree of monotonicity of the dye bias across the
+  slides. DEPRACATED
 }
 
 \description{
@@ -10,6 +11,9 @@
   bias, the graphs of each gene should form a 'fan' out of the origin
   (see also dyebias.trendplot). This function gives measure of the
   extent to which this is true.
+
+  This function has been depracated, as it is of limited use and takes
+  too long to compute.
 }
 
 \usage{
@@ -82,12 +86,11 @@
 
 }
 
-
 \references{
    Margaritis, T., Lijnzaad, P., van Leenen, D., Bouwmeester, D.,
   Kemmeren, P., van Hooff, S.R and Holstege, F.C.P. (2009).
   Adaptable gene-specific dye bias correction for two-channel DNA microarrays.
-  \emph{Molecular Systems Biology}, 5:266, 2009. doi: 10.1038/msb.2009.21.
+  \emph{Molecular Systems Biology}, 5:266, 2009. doi:10.1038/msb.2009.21.
 }
 
 \author{Philip Lijnzaad \email{p.lijnzaad@umcutrecht.nl} }
@@ -98,7 +101,7 @@
 }
 
 \examples{
-  \dontshow{
+  \dontrun{
      options(stringsAsFactors = FALSE)
 
      library(dyebias)
