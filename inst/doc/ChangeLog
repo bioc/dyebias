@@ -1,3 +1,8 @@
+2011-03-17  Philip Lijnzaad  <philip@philip-laptop>
+
+	* fixed errors in examples of depracated monotonicity
+	functions. (v1.9.3)
+
 2011-02-23  Philip Lijnzaad  <philip@philip-laptop>
 
 	* as below, but now we have an atomic top-level commit we can rely on; no
