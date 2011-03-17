@@ -10,5 +10,4 @@ citEntry(entry="Article",
     doi = {10.1038/msb.2009.21}
     )
 
-
-citFooter("The latest version of this package and the accompanying dyebiasexamples package are available from http://www.holstegelab.nl/publications/margaritis_lijnzaad/ and from the Bioconductor websites")
+citFooter("The latest version of this package and the accompanying dyebiasexamples package are available from Bioconductor, and from http://www.holstegelab.nl/publications/margaritis_lijnzaad/")
