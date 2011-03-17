@@ -146,7 +146,6 @@
                                             estimator.subset=estimator.subset,
                                             application.subset = application.subset,
                                             verbose=FALSE)
-  }                                     % dontshow
 
   layout(matrix(1:2, nrow=1,ncol=2))
 
@@ -163,6 +162,7 @@
                         output=NULL,
                         main="after correction"
                        ) 
+  }                                     % dontrun
 
 }
 

@@ -126,7 +126,6 @@
                                             estimator.subset=estimator.subset,
                                             application.subset = application.subset,
                                             verbose=FALSE)
-  }                                     % dontshow
 
   cat("monotonicity before correction")
   monotonicity <- dyebias.monotonicity(data=data.norm,
@@ -139,7 +138,7 @@
   dyebias.monotonicity(data=correction$data.corrected,
                                        iGSDBs=iGSDBs.estimated, 
                                        order= monotonicity$order)
-
+  }                                     % dontrun
 
 }
 
