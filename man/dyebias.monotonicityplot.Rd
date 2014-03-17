@@ -28,7 +28,7 @@
                            ylim = c(-0.2, 0.2),
                            xlab = "rank", ylab = "slope",
                            sub = NULL,
-                           ...)
+                           \dots)
 }
 
 %- maybe also 'usage' for other objects documented here.
