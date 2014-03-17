@@ -7,11 +7,25 @@
 
 \description{
 
-  Plots the $log_2(R)$ vs. $log_2(G)$ (or alternatively $M$ vs. $A$)
+  Plots the \eqn{log_2(R)} vs. \eqn{log_2(G)} (or alternatively \eqn{M} vs. \eqn{A})
   signal of one slide, highlighting the reporters with the strongest red
   and green dye bias. Two lines indicate two-fold change. See also
   Margaritis et al. (2009), Fig. 1
 
+}
+
+\usage{
+
+dyebias.rgplot(data, slide, iGSDBs, dyebias.percentile=5,
+               application.subset=TRUE, output=NULL, xlim =
+               c(log2(50),log2(50000)), ylim = c(log2(50),log2(50000)),
+               xticks = c(100,1000,10000,10000), yticks =
+               c(100,1000,10000,10000), pch = 19, cex = 0.3, cex.lab =
+               1.4, \dots)
+
+dyebias.maplot(data, slide, iGSDBs, dyebias.percentile=5,
+               application.subset=TRUE, output=NULL, xlim = c(6,16),
+               ylim = c(-2,2), pch = 19, cex = 0.3, cex.lab = 1.4, \dots)
 }
 
 \arguments{

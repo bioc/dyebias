@@ -1,6 +1,7 @@
 2014-03-17  philip  <philip@philip-laptop>
 
-	* removed the now depracted synopses from the help files (v1.21.2)
+	* turned the depracated synopsis sections in the help files into
+	\usage sections (v1.21.3); fixed citation; version bump.
 
 2011-03-17  Philip Lijnzaad  <philip@philip-laptop>
 

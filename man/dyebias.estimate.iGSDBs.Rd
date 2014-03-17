@@ -9,6 +9,11 @@
   using a set of normalized data, as part of the GASSCO method.
 }
 
+\usage{
+dyebias.estimate.iGSDBs(data.norm, is.balanced=TRUE, reference="ref",
+                        verbose=FALSE)
+}
+
 \arguments{
 
   \item{data.norm}{

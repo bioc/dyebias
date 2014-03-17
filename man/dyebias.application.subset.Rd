@@ -13,6 +13,9 @@
   to \code{\link{dyebias.apply.correction}}.
 }
 
+\usage{dyebias.application.subset(data.raw=NULL, min.SNR=1.5,
+                           use.background=FALSE, maxA=15)}
+
 \arguments{
 
   \item{data.raw}{

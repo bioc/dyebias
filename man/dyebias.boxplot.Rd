@@ -14,6 +14,10 @@
 
 }
 
+\usage{dyebias.boxplot(data, iGSDBs, dyebias.percentile=5,
+                application.subset=TRUE, order, output=NULL,
+                ylim=c(-4,4), \dots)}
+
 \arguments{
 
   \item{data}{The \code{marrayNorm} object to boxplot. 

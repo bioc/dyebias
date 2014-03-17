@@ -16,8 +16,18 @@
   Showing the total dye bias of all reporters is too overwhelming,
   therefore the medians of the total dye bias after binning by intrinsic
   gene specific dye bias (as given in \code{dyebias$dyebias}) are
-  plotted.  }
+  plotted.
+}
  
+
+\usage{
+dyebias.trendplot(data, iGSDBs, dyebias.percentile=5,
+                  application.subset=TRUE, n.bins=20, order,
+                  output=NULL, ylim=c(-1,1), cex=0.3, lty=1, lwd=1,
+                  type="median", main="dye bias trend plot",
+                  xlab="slide bias rank", ylab="M", sub=NULL, \dots)
+}
+
 \arguments{
 
   \item{data}{The \code{marrayNorm} to trendplot. 
