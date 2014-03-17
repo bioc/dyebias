@@ -18,25 +18,6 @@
   gene specific dye bias (as given in \code{dyebias$dyebias}) are
   plotted.  }
  
-
-\synopsis{
-
-  dyebias.trendplot <- function(data, iGSDBs, dyebias.percentile=5, application.subset=TRUE,
-                                n.bins=20,
-                                type="median",
-                                order,
-                                output=NULL,
-                                ylim=c(-2,2),
-                                cex=0.3,
-                                lty=1,
-                                lwd=1,
-                                main="dye bias trend plot",
-                                xlab="slide bias rank",
-                                ylab="M",
-                                sub=NULL,
-                                \dots)
-}
-
 \arguments{
 
   \item{data}{The \code{marrayNorm} to trendplot. 

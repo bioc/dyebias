@@ -14,23 +14,6 @@
 
 }
 
-\synopsis{
-
-  dyebias.rgplot(data, slide, iGSDBs, dyebias.percentile=5,
-                 application.subset=TRUE, output=NULL,
-                 xlim = c(log2(50),log2(50000)),
-                 ylim = c(log2(50),log2(50000)),
-                 xticks = c(100,1000,10000,10000),
-                 yticks = c(100,1000,10000,10000),
-                 pch = 19, cex = 0.3, cex.lab = 1.4,
-                 \dots)
-
-  dyebias.maplot(data, slide, iGSDBs, dyebias.percentile=5,
-                 application.subset=TRUE, output=NULL,
-                 xlim = c(6,16), ylim = c(-2,2),
-                 pch = 19, cex = 0.3,  cex.lab = 1.4, \dots)
-}
-
 \arguments{
 
   \item{data}{The \code{marrayNorm} object to plot one slide of.  }

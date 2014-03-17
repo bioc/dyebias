@@ -1,3 +1,7 @@
+2014-03-17  philip  <philip@philip-laptop>
+
+	* removed the now depracted synopses from the help files (v1.21.2)
+
 2011-03-17  Philip Lijnzaad  <philip@philip-laptop>
 
 	* fixed errors in examples of depracated monotonicity
@@ -23,7 +27,6 @@
 	* dyebias.R (dyebias.estimate.iGSDBs): In unbalanced design,
 	reference cannot be NULL or ''. Also editorial changes in man
 	pages and vignette, which has been recompiled (v.1.7.6). 
-	
 
 2010-09-01  Philip Lijnzaad  <p.lijnzaad@umcutrecht.nl>
 

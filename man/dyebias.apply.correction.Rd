@@ -7,17 +7,6 @@
   the GASSCO method by Margaritis et al.
 }
 
-\synopsis{dyebias.apply.correction(data.norm,
-                         iGSDBs,
-                         estimator.subset=TRUE, 
-                         application.subset=TRUE, 
-                         dyebias.percentile=5,
-                         minmaxA.perc=25,
-                         minA.abs=NULL,                         
-                         maxA.abs=NULL,
-                         verbose=FALSE)
-}
-
 \arguments{
 
   \item{data.norm}{
