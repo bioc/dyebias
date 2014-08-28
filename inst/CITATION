@@ -1,12 +1,15 @@
+# -*- mode: R; -*-
+
 citHeader("We kindly request that you cite the following publication whenever you use the dyebias package in your own work.")
 
-citEntry(entry="Article",
-    textVersion="Margaritis et al. (2009)",
-    title = "Adaptable gene-specific dye bias correction for two-channel DNA microarrays",
-    author = "Margaritis, T., Lijnzaad, P., van~Leenen, D., Bouwmeester, D., Kemmeren, P., van~Hooff, S.R and Holstege, F.C.P.",
-    year = 2009,
-    journal = "Molecular Systems Biology",
-    volume = "5",
-    pages = 266,
-    doi = {"10.1038/msb.2009.21"}
+cit <- citEntry(entry="Article",
+         textVersion="Margaritis et al. (2009)",
+         title = "Adaptable gene-specific dye bias correction for two-channel DNA microarrays",
+         author = as.person("T. Margaritis[aut], P. Lijnzaad[aut], D. van Leenen[aut], D. Bouwmeester[aut], P. Kemmeren[aut], S.R. van Hooff[aut], F.C.P. Holstege [aut]"),
+         year = 2009,
+         journal = "Molecular Systems Biology",
+         volume = "5",
+         pages = 266,
+         doi = "10.1038/msb.2009.21"
     )
+
