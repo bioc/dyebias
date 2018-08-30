@@ -162,7 +162,7 @@ you have installed both \Rcode{R} and Bioconductor, install the
 %% dont use a chunk here, easier to postprocess:
 \Rcode{                                 
 source("http://bioconductor.org/biocLite.R") \\
-biocLite("dyebias")
+BiocManager::install("dyebias")
 }
 
 \noindent Alternatively, under Windows, select \Rcode{Packages} from the menu
