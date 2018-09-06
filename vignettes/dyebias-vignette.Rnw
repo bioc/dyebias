@@ -161,7 +161,8 @@ you have installed both \Rcode{R} and Bioconductor, install the
 
 %% dont use a chunk here, easier to postprocess:
 \Rcode{                                 
-source("http://bioconductor.org/biocLite.R") \\
+if (!requireNamespace("BiocManager", quietly=TRUE)) \\
+    install.packages("BiocManager") \\
 BiocManager::install("dyebias")
 }
 
